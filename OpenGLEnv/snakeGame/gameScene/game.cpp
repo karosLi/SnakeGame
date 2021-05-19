@@ -103,7 +103,7 @@ void Game::Init()
     ResourceManager::LoadEmptyTexture();
     // 蛇纹理
     ResourceManager::LoadTexture("snake_head_0.png", GL_TRUE, "snake_head");
-    ResourceManager::LoadTexture("snake_body_1.png", GL_TRUE, "snake_body");
+    ResourceManager::LoadTexture("snake_body_0.png", GL_TRUE, "snake_body");
     // 粒子
     ResourceManager::LoadTexture("particle.png", GL_TRUE, "particle");
     
