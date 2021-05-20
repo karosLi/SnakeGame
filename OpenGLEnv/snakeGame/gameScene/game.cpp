@@ -113,23 +113,17 @@ void Game::Init()
     // 食物
     ResourceManager::LoadTexture("food_0.png", GL_TRUE, "food_0");
     
-    // 获取纹理对象以备用
-    Texture2D snakeHead = ResourceManager::GetTexture("snake_head");
-    Texture2D snakeBody = ResourceManager::GetTexture("snake_body");
-    Texture2D snakeTail = ResourceManager::GetTexture("snake_body");
-    Texture2D food_0 = ResourceManager::GetTexture("food_0");
-    
     /// 创建渲染对象
     // 创建精灵渲染对象
     SpriteRender = new SpriteRenderer(spriteShader);
     // 创建线段渲染对象
     LineRender = new LineRenderer(lineShader);
     // 创建粒子发射器渲染对象
-//    Particles = new ParticleGenerator(
-//        ResourceManager::GetShader("particle"),
-//        ResourceManager::GetTexture("particle"),
-//        500
-//    );
+    Particles = new ParticleGenerator(
+        ResourceManager::GetShader("particle"),
+        ResourceManager::GetTexture("particle"),
+        500
+    );
     // 创建特效处理渲染对象
     Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
     // 创建文本渲染对象
@@ -139,17 +133,14 @@ void Game::Init()
     
     /// 创建精灵
     // 蛇
-    Texture2D snakeSprites[] = {snakeHead, snakeBody, snakeTail};
+    std::vector<Texture2D> snakeSprites = {ResourceManager::GetTexture("snake_head"), ResourceManager::GetTexture("snake_body"), ResourceManager::GetTexture("snake_body")};
     // 由于加载的蛇头和身体纹理方向是向上的的，为了让蛇纹理方向与蛇移动方向一致，需要旋转蛇的节点，所以需要顺时针旋转 90 度
     Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(this->GridSize * 2, this->GridSize * 2), 5, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
     
     // 食物
-    Texture2D foodSprites[] = {food_0, food_0, food_0};
-    glm::vec4 food_color_0 = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::vec4 food_color_1 = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-    glm::vec4 food_color_2 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-    glm::vec4 foodColors[] = {food_color_0, food_color_1, food_color_2};
-    FoodsMgr = new FoodsManager(this->MapOrigin, glm::vec2(this->MapWidth, this->MapHeight), foodSprites, 3, foodColors, 3);
+    std::vector<Texture2D> foodSprites = {ResourceManager::GetTexture("food_0"), ResourceManager::GetTexture("food_0"), ResourceManager::GetTexture("food_0")};
+    std::vector<glm::vec4> foodColors = {glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)};
+    FoodsMgr = new FoodsManager(this->MapOrigin, glm::vec2(this->MapWidth, this->MapHeight), foodSprites, foodColors);
     FoodsMgr->GenerateSpriteFoods(5, glm::vec2(this->GridSize * 2, this->GridSize * 2));
     FoodsMgr->GenerateColorFoods(5, glm::vec2(this->GridSize, this->GridSize));
 }
@@ -271,7 +262,7 @@ void Game::Update(float dt)
     
     this->DoCollisions();
     
-//    Particles->Update(dt, Snake->Nodes[0], 3);
+    Particles->Update(dt, Snake->Nodes[0], 3);
     
     // 减少抖动时间
     if (ShakeTime > 0.0f)
@@ -310,7 +301,7 @@ void Game::Render()
         FoodsMgr->Draw(*SpriteRender);
         
         // 绘制粒子
-//        Particles->Draw();
+        Particles->Draw();
         
         // 绘制蛇
         Snake->Draw(*SpriteRender);

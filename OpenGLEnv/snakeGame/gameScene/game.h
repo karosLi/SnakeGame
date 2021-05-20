@@ -31,9 +31,6 @@ enum Direction {
 
 class Game
 {
-//    glm::vec2 gamePosition = glm::vec2(WINDOW_EDGE, WINDOW_EDGE);
-//    GLfloat gameWidth = this->Width - 2 * WINDOW_EDGE;
-//    GLfloat gameHeight = this->Height - 2 * WINDOW_EDGE;
     private:
         glm::vec2   MapOrigin;// 游戏场景位置
         GLfloat     MapWidth;// 游戏场景宽度

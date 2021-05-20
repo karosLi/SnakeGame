@@ -9,7 +9,7 @@
 #include "resource_manager.h"
 
 // 构造函数
-SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D (&sprites)[3], GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE) {
+SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, std::vector<Texture2D> sprites, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE) {
     this->NodeDistance = this->NodeSize.x * 1.0f;
     this->LoadNodes();
 }

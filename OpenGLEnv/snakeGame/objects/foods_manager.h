@@ -25,12 +25,10 @@ public:
     glm::vec2   MapOrigin, MapSize;// 地图原点和大小
     
     /// 食物有纹理和彩点两种
-    Texture2D   *Sprites;// 纹理数组（每个元素存的是一个 Texture2D 类型指针）指针
-    GLuint      SpriteCount;//纹理个数
-    glm::vec4   *Colors;// 颜色
-    GLuint      ColorCount;//颜色个数
+    std::vector<Texture2D> Sprites;// 纹理数组
+    std::vector<glm::vec4> Colors;// 颜色数组
     
-    FoodsManager(glm::vec2 mapOrigin, glm::vec2 mapSize, Texture2D *sprites, GLuint spriteCount, glm::vec4 *colors, GLuint colorCount);
+    FoodsManager(glm::vec2 mapOrigin, glm::vec2 mapSize, std::vector<Texture2D> sprites, std::vector<glm::vec4> colors);
     
     // 生成一批纹理食物
     void GenerateSpriteFoods(GLuint foodCount, glm::vec2 foodSize);

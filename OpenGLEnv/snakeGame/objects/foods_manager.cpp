@@ -8,7 +8,7 @@
 #include "foods_manager.h"
 #include "resource_manager.h"
 
-FoodsManager::FoodsManager(glm::vec2 mapOrigin, glm::vec2 mapSize, Texture2D *sprites, GLuint spriteCount, glm::vec4 *colors, GLuint colorCount): MapOrigin(mapOrigin), MapSize(mapSize), Sprites(sprites), SpriteCount(spriteCount), Colors(colors), ColorCount(colorCount)
+FoodsManager::FoodsManager(glm::vec2 mapOrigin, glm::vec2 mapSize, std::vector<Texture2D> sprites, std::vector<glm::vec4> colors): MapOrigin(mapOrigin), MapSize(mapSize), Sprites(sprites), Colors(colors)
 {
     
 }
@@ -38,23 +38,22 @@ void FoodsManager::GenerateColorFoods(GLuint foodCount, glm::vec2 foodSize)
 void FoodsManager::Update(GLfloat dt)
 {
     std::vector<GameObject> destoryedFoods;
-    
-    for (GameObject &food : this->Foods) {
+    this->Foods.erase(std::remove_if(this->Foods.begin(), this->Foods.end(), [&destoryedFoods](GameObject &food) {
         if (food.Destroyed) {
             destoryedFoods.push_back(food);
         }
+        return food.Destroyed;
+    }), this->Foods.end());
+
+    for (GameObject &food : destoryedFoods) {
+        if (food.Destroyed) {
+            if (food.Sprite.EmptyTexture) {
+                this->GenerateColorFoods(1, food.Size);
+            } else {
+                this->GenerateSpriteFoods(1, food.Size);
+            }
+        }
     }
-    
-//    for (GameObject &food : destoryedFoods) {
-//        if (food.Destroyed) {
-//            destoryedFoods.push_back(food);
-//            if (food.Sprite.EmptyTexture) {
-//                this->GenerateColorFoods(1, food.Size);
-//            } else {
-//                this->GenerateSpriteFoods(1, food.Size);
-//            }
-//        }
-//    }
 }
 
 void FoodsManager::Draw(SpriteRenderer &renderer)
@@ -76,20 +75,22 @@ glm::vec2 FoodsManager::GenearteRandomPosition(glm::vec2 foodSize)
 
 Texture2D FoodsManager::GenearteRandomSprite()
 {
-    if (this->SpriteCount == 0) {
+    GLuint size = static_cast<GLuint>(this->Sprites.size());
+    if (size == 0) {
         return ResourceManager::GetEmptyTexture();
     }
     
-    GLuint index = (rand() % this->SpriteCount);
+    GLuint index = rand() % size;
     return this->Sprites[index];
 }
 
 glm::vec4 FoodsManager::GenearteRandomColor()
 {
-    if (this->ColorCount == 0) {
+    GLuint size = static_cast<GLuint>(this->Colors.size());
+    if (size == 0) {
         return glm::vec4(0.0f);
     }
     
-    GLuint index = (rand() % this->ColorCount);
+    GLuint index = rand() % size;
     return this->Colors[index];
 }
