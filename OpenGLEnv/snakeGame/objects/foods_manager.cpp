@@ -37,6 +37,7 @@ void FoodsManager::GenerateColorFoods(GLuint foodCount, glm::vec2 foodSize)
 
 void FoodsManager::Update(GLfloat dt)
 {
+    // 移除被吃掉的食物
     std::vector<GameObject> destoryedFoods;
     this->Foods.erase(std::remove_if(this->Foods.begin(), this->Foods.end(), [&destoryedFoods](GameObject &food) {
         if (food.Destroyed) {
@@ -45,6 +46,7 @@ void FoodsManager::Update(GLfloat dt)
         return food.Destroyed;
     }), this->Foods.end());
 
+    // 有多少食物被吃掉，就生成多少新食物
     for (GameObject &food : destoryedFoods) {
         if (food.Destroyed) {
             if (food.Sprite.EmptyTexture) {

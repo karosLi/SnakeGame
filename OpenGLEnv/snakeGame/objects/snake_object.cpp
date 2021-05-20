@@ -38,10 +38,20 @@ void SnakeObject::AddTailNode()
         return;
     }
     
+    
     GameObject lastNode = this->Nodes[size - 1];// 最后一个节点
+    GameObject secondLastNode = size == 1 ? lastNode : this->Nodes[size - 2];// 最后一个节点
+    
+    GLfloat moveDistance;
+    if (size == 1) {// 说明只有一个头节点
+        moveDistance = this->NodeDistance;
+    } else {
+        moveDistance = glm::distance(lastNode.Position, secondLastNode.Position);
+    }
+    
     glm::vec2 direction = lastNode.Velocity;// 最后一个节点的方向
     // 通过最后一个节点位置往相反方向移动节点大小的位置就可以获得新的尾部节点的位置
-    glm::vec2 pos = lastNode.Position - direction * this->NodeDistance;
+    glm::vec2 pos = lastNode.Position - direction * moveDistance;
     
     GameObject newNode(pos, this->NodeSize, bodySprite, glm::vec4(1.0f));
     newNode.Velocity = lastNode.Velocity;
