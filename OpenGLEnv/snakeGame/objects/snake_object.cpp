@@ -9,7 +9,7 @@
 #include "resource_manager.h"
 
 // 构造函数
-SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D *sprites, GLuint spriteCount, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteCount(spriteCount), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE) {
+SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D *sprites, GLuint spriteCount, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteCount(spriteCount), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE) {
     this->NodeDistance = this->NodeSize.x * 1.0f;
     this->LoadNodes();
 }
@@ -65,7 +65,9 @@ void SnakeObject::Move(GLfloat dt) {
 }
 
 void SnakeObject::MoveBody1(GLfloat dt) {
-    GLfloat speed = glm::length(this->Velocity);// 每秒速度
+    GLfloat speedUp = this->SpeedUp ? 2.0f : 1.0f;
+    
+    GLfloat speed = glm::length(this->Velocity * speedUp);// 每秒速度
     GLuint size = static_cast<GLuint>(this->Nodes.size());
     for (GLint i = size - 1; i > 0; i--) {
         GameObject &preNode = this->Nodes[i-1];
@@ -85,12 +87,14 @@ void SnakeObject::MoveBody1(GLfloat dt) {
         curNode.RotationQuat = interpRotationQuat;
     }
     
-    this->Position += this->Velocity * dt;
+    this->Position += this->Velocity * dt * speedUp;
     this->MoveHead();
 }
 
 void SnakeObject::MoveBody2(GLfloat dt) {
-    this->Position += this->Velocity * dt;
+    GLfloat speedUp = this->SpeedUp ? 2.0f : 1.0f;
+    
+    this->Position += this->Velocity * dt * speedUp;
     this->MoveHead();
     
     /**

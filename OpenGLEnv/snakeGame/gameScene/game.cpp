@@ -200,6 +200,13 @@ void Game::ProcessInput(float dt)
             }
         }
         
+        if (this->Keys[GLFW_KEY_EQUAL])// 按了 = 表示加速
+        {
+            Snake->SpeedUp = GL_TRUE;
+        } else {
+            Snake->SpeedUp = GL_FALSE;
+        }
+        
         if (this->Keys[GLFW_KEY_SPACE])// 按下空格表示游戏开始
         {
             Snake->Pause = GL_FALSE;

@@ -33,6 +33,7 @@ public:
     Texture2D   *Sprites;// 头部，中间，尾巴纹理，数组（每个元素存的是一个 Texture2D 类型指针）指针
     GLuint      SpriteCount;//纹理个数
     
+    GLboolean   SpeedUp;// 蛇是否加速
     GLboolean   Pause;// 蛇停止移动
     
     // 构造函数
