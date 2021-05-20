@@ -91,13 +91,14 @@ int main(int argc, char *argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // 指定清空颜色缓冲的颜色值
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     
     // DeltaTime variables
     GLuint frameCount = 0;
     GLfloat t0 = glfwGetTime(), t1, fps = 0.0f;// 用于计算 FPS
     GLfloat deltaTime = 0.0f; // deltaTime 帧间隔
     GLfloat lastFrame = 0.0f;
+    GLfloat frameRate = 1.0/60.0;// 限制在 1秒钟 60 帧
     
     // Initialize game
     SnakeName.Init();
@@ -110,7 +111,10 @@ int main(int argc, char *argv[])
         GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         
-        if (deltaTime >= 1.0/60.0) // 限制在 1秒钟 60 帧
+        // 轮询和处理事件
+        glfwPollEvents();
+        
+        if (deltaTime >= frameRate)
         {
             // 管理用户点击按键
             SnakeName.ProcessInput(deltaTime);
@@ -134,8 +138,6 @@ int main(int argc, char *argv[])
 
             // 交换前后台缓冲
             glfwSwapBuffers(window);
-            // 轮询和处理事件
-            glfwPollEvents();
 
             lastFrame = currentFrame;
         }

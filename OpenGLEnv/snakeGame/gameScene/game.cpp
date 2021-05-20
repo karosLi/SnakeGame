@@ -103,7 +103,7 @@ void Game::Init()
     ResourceManager::LoadEmptyTexture();
     // 蛇纹理
     ResourceManager::LoadTexture("snake_head_0.png", GL_TRUE, "snake_head");
-    ResourceManager::LoadTexture("snake_body_0.png", GL_TRUE, "snake_body");
+    ResourceManager::LoadTexture("snake_body_1.png", GL_TRUE, "snake_body");
     // 粒子
     ResourceManager::LoadTexture("particle.png", GL_TRUE, "particle");
     
@@ -128,7 +128,7 @@ void Game::Init()
     
     
     /// 创建精灵
-    glm::vec3 snakePosition = glm::vec3(this->GamePosition.x + this->GameWidth / 2.0, this->GamePosition.y + this->GameHeight / 2.0, 0.0f);
+    glm::vec2 snakePosition = glm::vec2(this->GamePosition.x + this->GameWidth / 2.0, this->GamePosition.y + this->GameHeight / 2.0);
     
     Texture2D snakeHead = ResourceManager::GetTexture("snake_head");
     Texture2D snakeBody = ResourceManager::GetTexture("snake_body");
@@ -268,7 +268,7 @@ void Game::Render()
         
         // 绘制背景
         Texture2D texture = ResourceManager::GetEmptyTexture();
-        SpriteRender->DrawSprite(texture, glm::vec3(gamePosition, 0.0f), glm::vec2(gameWidth, gameHeight), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        SpriteRender->DrawSprite(texture, gamePosition, glm::vec2(gameWidth, gameHeight), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
         
         // 绘制网格
         for (GLuint row = 0; row < GRID_ROWS; row++) {

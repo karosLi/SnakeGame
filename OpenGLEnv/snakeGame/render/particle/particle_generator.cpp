@@ -16,7 +16,7 @@ ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, GLuint am
 /**
  在每一帧里面，我们都会用一个起始变量来产生一些新的粒子并且对每个粒子（还活着的）更新它们的值。
  */
-void ParticleGenerator::Update(GLfloat dt, GameObject &object, GLuint newParticles, glm::vec3 offset)
+void ParticleGenerator::Update(GLfloat dt, GameObject &object, GLuint newParticles, glm::vec2 offset)
 {
     // Add new particles
     for (GLuint i = 0; i < newParticles; ++i)
@@ -135,7 +135,7 @@ GLuint ParticleGenerator::firstUnusedParticle()
     return 0;
 }
 
-void ParticleGenerator::respawnParticle(Particle &particle, GameObject &object, glm::vec3 offset)
+void ParticleGenerator::respawnParticle(Particle &particle, GameObject &object, glm::vec2 offset)
 {
     /**
      一旦粒子数组中第一个消亡的粒子被发现的时候，我们就通过调用RespawnParticle函数更新它的值，函数接受一个Particle对象，一个GameObject对象和一个offset向量:

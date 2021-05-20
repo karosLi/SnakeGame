@@ -36,7 +36,7 @@ public:
     // Constructor
     ParticleGenerator(Shader shader, Texture2D texture, GLuint amount);
     // Update all particles
-    void Update(GLfloat dt, GameObject &object, GLuint newParticles, glm::vec3 offset = glm::vec3(0.0f));
+    void Update(GLfloat dt, GameObject &object, GLuint newParticles, glm::vec2 offset = glm::vec2(0.0f));
     // Render all particles
     void Draw();
 private:
@@ -52,7 +52,7 @@ private:
     // Returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
     GLuint firstUnusedParticle();
     // Respawns particle
-    void respawnParticle(Particle &particle, GameObject &object, glm::vec3 offset = glm::vec3(0.0f));
+    void respawnParticle(Particle &particle, GameObject &object, glm::vec2 offset = glm::vec2(0.0f));
 };
 
 #endif

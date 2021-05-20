@@ -49,7 +49,7 @@ void SnakeObject::MoveHead() {
     rotaion += this->SpriteRotation;
     
     /// 移动蛇头
-    this->Nodes[0].Position = glm::vec3(this->Position, this->Nodes[0].Position.z);
+    this->Nodes[0].Position = this->Position;
     this->Nodes[0].Velocity = direction;
     this->Nodes[0].Rotation = rotaion;
     this->Nodes[0].RotationQuat = glm::angleAxis(glm::radians(rotaion), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -60,6 +60,20 @@ void SnakeObject::Move(GLfloat dt) {
         return;
     }
     
+    this->MoveBody2(dt);
+}
+
+void SnakeObject::MoveBody1(GLfloat dt) {
+    GLuint size = static_cast<GLuint>(this->Nodes.size());
+    for (GLint i = size - 1; i > 0; i--) {
+        GameObject &preNode = this->Nodes[i-1];
+        GameObject &curNode = this->Nodes[i];
+        
+        
+    }
+}
+
+void SnakeObject::MoveBody2(GLfloat dt) {
     this->Position += this->Velocity * dt;
     this->MoveHead();
     
@@ -80,13 +94,10 @@ void SnakeObject::Move(GLfloat dt) {
         if (interpFactor >= 1.0f) {
             continue;
         }
-        
+
         /// 线性插值位置
-        GLfloat z = curNode.Position.z;
         curNode.Position = glm::mix(preNode.Position, curNode.Position, interpFactor);
-        // 不修改 z
-        curNode.Position.z = z;
-        
+
         /// 四元数 - 旋转插值
         glm::quat interpRotationQuat = glm::slerp(preNode.RotationQuat, curNode.RotationQuat, interpFactor);
         curNode.RotationQuat = interpRotationQuat;

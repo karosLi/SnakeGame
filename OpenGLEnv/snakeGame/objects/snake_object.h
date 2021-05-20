@@ -49,6 +49,8 @@ private:
     GLfloat     NodeDistance;// 节点间的距离
     void LoadNodes();
     void MoveHead();
+    void MoveBody1(GLfloat dt);
+    void MoveBody2(GLfloat dt);
 };
 
 

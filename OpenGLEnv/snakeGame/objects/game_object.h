@@ -25,8 +25,7 @@ class GameObject
 public:
     // Object state
     GLuint      frameIndex;// 对象当前渲染的帧索引
-    glm::vec3   Position;
-    glm::vec2   Size, Velocity;
+    glm::vec2   Position, StaticPosition, Size, Velocity;
     glm::vec4   Color;
     GLfloat     Rotation;
     glm::quat   RotationQuat;
@@ -36,7 +35,7 @@ public:
     Texture2D   Sprite;
     // Constructor(s)
     GameObject();
-    GameObject(glm::vec3 pos, glm::vec2 size, Texture2D sprite, glm::vec4 color = glm::vec4(1.0f), glm::vec2 velocity = glm::vec2(0.0f, 0.0f));
+    GameObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite, glm::vec4 color = glm::vec4(1.0f), glm::vec2 velocity = glm::vec2(0.0f, 0.0f));
     // Draw sprite
     virtual void Draw(SpriteRenderer &renderer);
 };
