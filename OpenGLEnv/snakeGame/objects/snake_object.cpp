@@ -60,17 +60,33 @@ void SnakeObject::Move(GLfloat dt) {
         return;
     }
     
-    this->MoveBody2(dt);
+    this->MoveBody1(dt);
+//    this->MoveBody2(dt);
 }
 
 void SnakeObject::MoveBody1(GLfloat dt) {
+    GLfloat speed = glm::length(this->Velocity);// 每秒速度
     GLuint size = static_cast<GLuint>(this->Nodes.size());
     for (GLint i = size - 1; i > 0; i--) {
         GameObject &preNode = this->Nodes[i-1];
         GameObject &curNode = this->Nodes[i];
         
+        glm::vec2 direction = preNode.Position - curNode.Position;
+        direction = glm::normalize(direction);
         
+        glm::vec2 moveVector = direction * speed * dt;
+        GLfloat moveDistance = glm::length(moveVector);
+        
+        GLfloat interpFactor = moveDistance / this->NodeDistance;
+        /// 线性插值位置
+        curNode.Position = glm::mix(curNode.Position, preNode.Position, interpFactor);
+        /// 四元数 - 旋转插值
+        glm::quat interpRotationQuat = glm::slerp(curNode.RotationQuat, preNode.RotationQuat, interpFactor);
+        curNode.RotationQuat = interpRotationQuat;
     }
+    
+    this->Position += this->Velocity * dt;
+    this->MoveHead();
 }
 
 void SnakeObject::MoveBody2(GLfloat dt) {

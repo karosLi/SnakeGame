@@ -24,7 +24,7 @@ class GameObject
 {
 public:
     // Object state
-    GLuint      frameIndex;// 对象当前渲染的帧索引
+    GLint       FrameIndex;// 对象当前渲染的帧索引
     glm::vec2   Position, StaticPosition, Size, Velocity;
     glm::vec4   Color;
     GLfloat     Rotation;
