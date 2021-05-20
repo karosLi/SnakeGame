@@ -55,9 +55,10 @@
 		7C9A2DA9264D248F0054EA21 /* line.fs in Resources */ = {isa = PBXBuildFile; fileRef = 7C9A2DA7264D248F0054EA21 /* line.fs */; };
 		7C9A2DC9264E5A630054EA21 /* snake_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C9A2DC7264E5A630054EA21 /* snake_object.cpp */; };
 		7C9A2DCC264E94150054EA21 /* snake_head_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C9A2DCA264E94150054EA21 /* snake_head_0.png */; };
-		7C9A2DCD264E94150054EA21 /* food.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C9A2DCB264E94150054EA21 /* food.png */; };
+		7C9A2DCD264E94150054EA21 /* food_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C9A2DCB264E94150054EA21 /* food_0.png */; };
 		7C9A2DDB26539EEA0054EA21 /* snake_body_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C9A2DDA26539EEA0054EA21 /* snake_body_1.png */; };
 		7C9A2DE12653A4650054EA21 /* snake_body_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 7C9A2DE02653A4650054EA21 /* snake_body_0.png */; };
+		7C9A2DE42656406D0054EA21 /* foods_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C9A2DE22656406D0054EA21 /* foods_manager.cpp */; };
 		7CC8BE002616B9DD00D97563 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC8BDFA2616B9DC00D97563 /* libglfw3.a */; };
 		7CC8BE102616BF6000D97563 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 7CC8BE0F2616BF6000D97563 /* glad.c */; };
 		7CC8BE322616CAEE00D97563 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CC8BE1F2616C28C00D97563 /* IOKit.framework */; };
@@ -343,9 +344,11 @@
 		7C9A2DC7264E5A630054EA21 /* snake_object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = snake_object.cpp; sourceTree = "<group>"; };
 		7C9A2DC8264E5A630054EA21 /* snake_object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = snake_object.h; sourceTree = "<group>"; };
 		7C9A2DCA264E94150054EA21 /* snake_head_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = snake_head_0.png; sourceTree = "<group>"; };
-		7C9A2DCB264E94150054EA21 /* food.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = food.png; sourceTree = "<group>"; };
+		7C9A2DCB264E94150054EA21 /* food_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = food_0.png; sourceTree = "<group>"; };
 		7C9A2DDA26539EEA0054EA21 /* snake_body_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = snake_body_1.png; sourceTree = "<group>"; };
 		7C9A2DE02653A4650054EA21 /* snake_body_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = snake_body_0.png; sourceTree = "<group>"; };
+		7C9A2DE22656406D0054EA21 /* foods_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = foods_manager.cpp; sourceTree = "<group>"; };
+		7C9A2DE32656406D0054EA21 /* foods_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = foods_manager.h; sourceTree = "<group>"; };
 		7CC8BDFA2616B9DC00D97563 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
 		7CC8BDFE2616B9DC00D97563 /* glfw3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3.h; sourceTree = "<group>"; };
 		7CC8BDFF2616B9DC00D97563 /* glfw3native.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3native.h; sourceTree = "<group>"; };
@@ -923,6 +926,8 @@
 				7C9A2D41264D18150054EA21 /* game_object.cpp */,
 				7C9A2DC8264E5A630054EA21 /* snake_object.h */,
 				7C9A2DC7264E5A630054EA21 /* snake_object.cpp */,
+				7C9A2DE32656406D0054EA21 /* foods_manager.h */,
+				7C9A2DE22656406D0054EA21 /* foods_manager.cpp */,
 			);
 			path = objects;
 			sourceTree = "<group>";
@@ -1034,7 +1039,7 @@
 		7C9A2D72264D19820054EA21 /* textures */ = {
 			isa = PBXGroup;
 			children = (
-				7C9A2DCB264E94150054EA21 /* food.png */,
+				7C9A2DCB264E94150054EA21 /* food_0.png */,
 				7C9A2DCA264E94150054EA21 /* snake_head_0.png */,
 				7C9A2DDA26539EEA0054EA21 /* snake_body_1.png */,
 				7C9A2DE02653A4650054EA21 /* snake_body_0.png */,
@@ -1608,7 +1613,7 @@
 				7CC8C431261C814800D97563 /* matrix_cross_product.inl in Resources */,
 				7CC8C417261C814800D97563 /* bitfield.inl in Resources */,
 				7CC8C435261C814800D97563 /* transform.inl in Resources */,
-				7C9A2DCD264E94150054EA21 /* food.png in Resources */,
+				7C9A2DCD264E94150054EA21 /* food_0.png in Resources */,
 				7CC8C425261C814800D97563 /* constants.inl in Resources */,
 				7CC8C459261C814800D97563 /* matrix_decompose.inl in Resources */,
 				7CC8C42D261C814800D97563 /* gradient_paint.inl in Resources */,
@@ -1741,6 +1746,7 @@
 				7CC8BE102616BF6000D97563 /* glad.c in Sources */,
 				7C9A2DA5264D228B0054EA21 /* line_renderer.cpp in Sources */,
 				7C9A2D6E264D18AE0054EA21 /* resource_manager.cpp in Sources */,
+				7C9A2DE42656406D0054EA21 /* foods_manager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

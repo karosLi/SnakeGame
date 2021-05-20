@@ -19,6 +19,7 @@
 #include "text_renderer.h"
 
 #include "snake_object.h"
+#include "foods_manager.h"
 
 #define WINDOW_EDGE 0
 #define GRID_ROWS 50
@@ -50,17 +51,20 @@ SnakeObject         *Snake;
 const GLfloat   INITIAL_SNAKE_VELOCITY = 100;
 const glm::vec2 INITIAL_SNAKE_DIRECTION(0.0f, -1.0f);// 默认向上
 
+// 食物管理
+FoodsManager        *FoodsMgr;
+
 Game::Game(GLuint width, GLuint height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height), Lives(3)
 {
-    glm::vec2 gamePosition = glm::vec2(WINDOW_EDGE, WINDOW_EDGE);
-    GLfloat gameWidth = this->Width - 2 * WINDOW_EDGE;
-    GLfloat gameHeight = this->Height - 2 * WINDOW_EDGE;
+    glm::vec2 mapOrigin = glm::vec2(WINDOW_EDGE, WINDOW_EDGE);
+    GLfloat mapWidth = this->Width - 2 * WINDOW_EDGE;
+    GLfloat mapHeight = this->Height - 2 * WINDOW_EDGE;
     
-    this->GamePosition = gamePosition;
-    this->GameWidth = gameWidth;
-    this->GameHeight = gameHeight;
-    this->GridSize = gameWidth / GRID_ROWS;
+    this->MapOrigin = mapOrigin;
+    this->MapWidth = mapWidth;
+    this->MapHeight = mapHeight;
+    this->GridSize = mapWidth / GRID_ROWS;
 }
 
 Game::~Game()
@@ -106,7 +110,14 @@ void Game::Init()
     ResourceManager::LoadTexture("snake_body_0.png", GL_TRUE, "snake_body");
     // 粒子
     ResourceManager::LoadTexture("particle.png", GL_TRUE, "particle");
+    // 食物
+    ResourceManager::LoadTexture("food_0.png", GL_TRUE, "food_0");
     
+    // 获取纹理对象以备用
+    Texture2D snakeHead = ResourceManager::GetTexture("snake_head");
+    Texture2D snakeBody = ResourceManager::GetTexture("snake_body");
+    Texture2D snakeTail = ResourceManager::GetTexture("snake_body");
+    Texture2D food_0 = ResourceManager::GetTexture("food_0");
     
     /// 创建渲染对象
     // 创建精灵渲染对象
@@ -114,11 +125,11 @@ void Game::Init()
     // 创建线段渲染对象
     LineRender = new LineRenderer(lineShader);
     // 创建粒子发射器渲染对象
-    Particles = new ParticleGenerator(
-        ResourceManager::GetShader("particle"),
-        ResourceManager::GetTexture("particle"),
-        500
-    );
+//    Particles = new ParticleGenerator(
+//        ResourceManager::GetShader("particle"),
+//        ResourceManager::GetTexture("particle"),
+//        500
+//    );
     // 创建特效处理渲染对象
     Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
     // 创建文本渲染对象
@@ -127,14 +138,20 @@ void Game::Init()
     
     
     /// 创建精灵
-    glm::vec2 snakePosition = glm::vec2(this->GamePosition.x + this->GameWidth / 2.0, this->GamePosition.y + this->GameHeight / 2.0);
-    
-    Texture2D snakeHead = ResourceManager::GetTexture("snake_head");
-    Texture2D snakeBody = ResourceManager::GetTexture("snake_body");
-    Texture2D snakeSprites[] = {snakeHead, snakeBody, snakeBody};
-    glm::vec2 snakeNodeSize = glm::vec2(this->GridSize * 2, this->GridSize * 2);
+    // 蛇
+    Texture2D snakeSprites[] = {snakeHead, snakeBody, snakeTail};
     // 由于加载的蛇头和身体纹理方向是向上的的，为了让蛇纹理方向与蛇移动方向一致，需要旋转蛇的节点，所以需要顺时针旋转 90 度
-    Snake = new SnakeObject(snakePosition, snakeNodeSize, 30, snakeSprites, 3, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
+    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(this->GridSize * 2, this->GridSize * 2), 5, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
+    
+    // 食物
+    Texture2D foodSprites[] = {food_0, food_0, food_0};
+    glm::vec4 food_color_0 = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::vec4 food_color_1 = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    glm::vec4 food_color_2 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+    glm::vec4 foodColors[] = {food_color_0, food_color_1, food_color_2};
+    FoodsMgr = new FoodsManager(this->MapOrigin, glm::vec2(this->MapWidth, this->MapHeight), foodSprites, 3, foodColors, 3);
+    FoodsMgr->GenerateSpriteFoods(5, glm::vec2(this->GridSize * 2, this->GridSize * 2));
+    FoodsMgr->GenerateColorFoods(5, glm::vec2(this->GridSize, this->GridSize));
 }
 
 void Game::ProcessInput(float dt)
@@ -250,6 +267,12 @@ void Game::Update(float dt)
 {
     Snake->Move(dt);
     
+    FoodsMgr->Update(dt);
+    
+    this->DoCollisions();
+    
+//    Particles->Update(dt, Snake->Nodes[0], 3);
+    
     // 减少抖动时间
     if (ShakeTime > 0.0f)
     {
@@ -258,7 +281,6 @@ void Game::Update(float dt)
             Effects->Shake = GL_FALSE;
     }
 }
-GLboolean food = GL_TRUE;
 
 void Game::Render()
 {
@@ -267,36 +289,31 @@ void Game::Render()
         // Begin rendering to postprocessing quad
         Effects->BeginRender();
         
-        glm::vec2 gamePosition = this->GamePosition;
-        GLfloat gameWidth = this->GameWidth;
-        GLfloat gameHeight = this->GameHeight;
+        glm::vec2 mapOrigin = this->MapOrigin;
+        GLfloat mapWidth = this->MapWidth;
+        GLfloat mapHeight = this->MapHeight;
         GLfloat gridSize = this->GridSize;
         
         // 绘制背景
         Texture2D texture = ResourceManager::GetEmptyTexture();
-        SpriteRender->DrawSprite(texture, gamePosition, glm::vec2(gameWidth, gameHeight), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        SpriteRender->DrawSprite(texture, mapOrigin, glm::vec2(mapWidth, mapHeight), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
         
         // 绘制网格
         for (GLuint row = 0; row < GRID_ROWS; row++) {
-            LineRender->DrawLine(glm::vec2(gamePosition.x, gamePosition.y + gridSize * row), gameWidth, GL_TRUE, 0, glm::vec4(0.0f, 0.0f, 0.0f, 0.5f));
+            LineRender->DrawLine(glm::vec2(mapOrigin.x, mapOrigin.y + gridSize * row), mapWidth, GL_TRUE, 0, glm::vec4(0.0f, 0.0f, 0.0f, 0.5f));
         }
         for (GLuint col = 0; col < GRID_COLS; col++) {
-            LineRender->DrawLine(glm::vec2(gamePosition.x + gridSize * col, gamePosition.y), gameHeight, GL_FALSE, 0, glm::vec4(0.0f, 0.0f, 0.0f, 0.5f));
+            LineRender->DrawLine(glm::vec2(mapOrigin.x + gridSize * col, mapOrigin.y), mapHeight, GL_FALSE, 0, glm::vec4(0.0f, 0.0f, 0.0f, 0.5f));
         }
         
-//        if (food) {
-//            Texture2D foodTexture = ResourceManager::GetEmptyTexture();
-//            GLfloat random = rand() % static_cast<GLuint>(gameWidth);
-//            glm::vec3 foodPosition = glm::vec3(gamePosition.x + 1, gamePosition.y + 1, 0.0f);
-//
-//            SpriteRender->DrawSprite(foodTexture, foodPosition, glm::vec2(200, 200), 0.0f, glm::vec4(0.0f, 1.0f, 1.0f, 0.5f));
-//        }
+        // 绘制食物
+        FoodsMgr->Draw(*SpriteRender);
+        
+        // 绘制粒子
+//        Particles->Draw();
         
         // 绘制蛇
         Snake->Draw(*SpriteRender);
-    
-        // 绘制粒子
-        Particles->Draw();
         
         
         // End rendering to postprocessing quad
@@ -326,10 +343,21 @@ void Game::Render()
     }
 }
 
+// collision detection
+GLboolean CheckCollision(GameObject &one, GameObject &two);// AABB 碰撞检测
+
 // 碰撞检测
 void Game::DoCollisions()
 {
-    
+    for (GameObject &food : FoodsMgr->Foods) {
+        if (!food.Destroyed) {
+            GLboolean collision = CheckCollision(Snake->Nodes[0], food);
+            if (collision) {
+                Snake->EatFood(food.Position);
+                food.Destroyed = GL_TRUE;
+            }
+        }
+    }
 }
 
 void Game::ResetLevel()
@@ -340,4 +368,20 @@ void Game::ResetLevel()
 void Game::ResetPlayer()
 {
     
+}
+
+/// AABB 碰撞检测
+GLboolean CheckCollision(GameObject &one, GameObject &two) // AABB - AABB collision
+{
+    /**
+     我们检查第一个物体的最右侧是否大于第二个物体的最左侧并且第二个物体的最右侧是否大于第一个物体的最左侧；垂直的轴向与此相似。
+     */
+    // x轴方向碰撞？
+    GLboolean collisionX = one.Position.x + one.Size.x >= two.Position.x &&
+        two.Position.x + two.Size.x >= one.Position.x;
+    // y轴方向碰撞？
+    GLboolean collisionY = one.Position.y + one.Size.y >= two.Position.y &&
+        two.Position.y + two.Size.y >= one.Position.y;
+    // 只有两个轴向都有碰撞时才碰撞
+    return collisionX && collisionY;
 }

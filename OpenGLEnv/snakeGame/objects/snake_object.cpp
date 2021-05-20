@@ -9,7 +9,7 @@
 #include "resource_manager.h"
 
 // 构造函数
-SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D *sprites, GLuint spriteCount, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteCount(spriteCount), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE) {
+SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D (&sprites)[3], GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE) {
     this->NodeDistance = this->NodeSize.x * 1.0f;
     this->LoadNodes();
 }
@@ -18,24 +18,41 @@ void SnakeObject::LoadNodes() {
     // 清空过期数据
     this->Nodes.clear();
     
+    for (GLuint i = 0; i < this->InitialLength; i++) {
+        this->AddTailNode();
+    }
+}
+
+void SnakeObject::AddTailNode()
+{
     Texture2D headSprite = this->Sprites[0];
     Texture2D bodySprite = this->Sprites[1];
-    for (GLuint i = 0; i < this->InitialLength; i++) {
-        glm::vec3 pos(this->Position.x, this->Position.y + i * this->NodeDistance, 0);
-        
-        if (i == 0) {
-            GameObject node(pos, this->NodeSize, headSprite, glm::vec4(1.0f));
-            this->Nodes.push_back(node);
-            this->Position = pos;
-            this->MoveHead();
-        } else {
-            GameObject node(pos, this->NodeSize, bodySprite, glm::vec4(1.0f));
-            node.Velocity = this->Nodes[0].Velocity;
-            node.Rotation = this->Nodes[0].Rotation;
-            node.RotationQuat = this->Nodes[0].RotationQuat;
-            this->Nodes.push_back(node);
-        }
+    
+    GLuint size = static_cast<GLuint>(this->Nodes.size());
+    if (size == 0) {
+        glm::vec2 pos(this->Position.x, this->Position.y + this->NodeDistance);
+        GameObject newNode(pos, this->NodeSize, headSprite, glm::vec4(1.0f));
+        this->Nodes.push_back(newNode);
+        this->Position = pos;
+        this->MoveHead();
+        return;
     }
+    
+    GameObject lastNode = this->Nodes[size - 1];// 最后一个节点
+    glm::vec2 direction = lastNode.Velocity;// 最后一个节点的方向
+    // 通过最后一个节点位置往相反方向移动节点大小的位置就可以获得新的尾部节点的位置
+    glm::vec2 pos = lastNode.Position - direction * this->NodeDistance;
+    
+    GameObject newNode(pos, this->NodeSize, bodySprite, glm::vec4(1.0f));
+    newNode.Velocity = lastNode.Velocity;
+    newNode.Rotation = lastNode.Rotation;
+    newNode.RotationQuat = lastNode.RotationQuat;
+    this->Nodes.push_back(newNode);
+}
+
+void SnakeObject::EatFood(glm::vec2 foodPosition)
+{
+    this->AddTailNode();
 }
 
 void SnakeObject::MoveHead() {
@@ -75,6 +92,7 @@ void SnakeObject::MoveBody1(GLfloat dt) {
         
         glm::vec2 direction = preNode.Position - curNode.Position;
         direction = glm::normalize(direction);
+        curNode.Velocity = direction;
         
         glm::vec2 moveVector = direction * speed * dt;
         GLfloat moveDistance = glm::length(moveVector);
@@ -107,13 +125,13 @@ void SnakeObject::MoveBody2(GLfloat dt) {
     for (GLint i = 1; i < size; i++) {
         GameObject &preNode = this->Nodes[i-1];
         GameObject &curNode = this->Nodes[i];
+        
+        glm::vec2 direction = preNode.Position - curNode.Position;
+        direction = glm::normalize(direction);
+        curNode.Velocity = direction;
  
         GLfloat distance = glm::distance(preNode.Position,  curNode.Position);
         GLfloat interpFactor = this->NodeDistance / distance;
-        
-        if (interpFactor >= 1.0f) {
-            continue;
-        }
 
         /// 线性插值位置
         curNode.Position = glm::mix(preNode.Position, curNode.Position, interpFactor);

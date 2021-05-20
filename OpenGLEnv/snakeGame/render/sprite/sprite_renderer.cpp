@@ -43,13 +43,13 @@ void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec
     this->shader.SetVector4f("spriteColor", color);
     
     if (texture.EmptyTexture) {
-        this->shader.SetInteger("useImage", false);
+        this->shader.SetInteger("useImage", 0);
     } else {
-        this->shader.SetInteger("useImage", true);
-        
-        glActiveTexture(GL_TEXTURE0);
-        texture.Bind();
+        this->shader.SetInteger("useImage", 1);
     }
+    
+    glActiveTexture(GL_TEXTURE0);
+    texture.Bind();
     
     glBindVertexArray(this->quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);

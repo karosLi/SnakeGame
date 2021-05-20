@@ -12,10 +12,7 @@
 Texture2D::Texture2D()
     : Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR), EmptyTexture(GL_FALSE)
 {
-    if (!this->EmptyTexture)
-    {
-        glGenTextures(1, &this->ID);
-    }
+    glGenTextures(1, &this->ID);
 }
 
 void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
@@ -36,8 +33,6 @@ void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
 }
 
 void Texture2D::Bind() const
-{   if (!this->EmptyTexture)
-    {
-        glBindTexture(GL_TEXTURE_2D, this->ID);
-    }
+{
+    glBindTexture(GL_TEXTURE_2D, this->ID);
 }

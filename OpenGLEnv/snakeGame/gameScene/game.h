@@ -21,15 +21,23 @@ enum GameState {
     GAME_WIN
 };
 
+// Represents the four possible (collision) directions - 碰撞方向
+enum Direction {
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT
+};
+
 class Game
 {
 //    glm::vec2 gamePosition = glm::vec2(WINDOW_EDGE, WINDOW_EDGE);
 //    GLfloat gameWidth = this->Width - 2 * WINDOW_EDGE;
 //    GLfloat gameHeight = this->Height - 2 * WINDOW_EDGE;
     private:
-        glm::vec2   GamePosition;// 游戏场景位置
-        GLfloat     GameWidth;// 游戏场景宽度
-        GLfloat     GameHeight;// 游戏场景高度
+        glm::vec2   MapOrigin;// 游戏场景位置
+        GLfloat     MapWidth;// 游戏场景宽度
+        GLfloat     MapHeight;// 游戏场景高度
         GLuint      GridSize;// 格子大小
     public:
         // 游戏状态

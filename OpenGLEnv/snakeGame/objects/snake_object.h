@@ -30,18 +30,21 @@ public:
     
     // 外观
     glm::vec4   Color;// 颜色
-    Texture2D   *Sprites;// 头部，中间，尾巴纹理，数组（每个元素存的是一个 Texture2D 类型指针）指针
+    Texture2D   (&Sprites)[3];// 头部，中间，尾巴纹理，数组（每个元素存的是一个 Texture2D 类型指针）指针
     GLuint      SpriteCount;//纹理个数
     
     GLboolean   SpeedUp;// 蛇是否加速
     GLboolean   Pause;// 蛇停止移动
     
     // 构造函数
-    SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D *sprites, GLuint spriteCount, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color = glm::vec4(1.0f));
+    SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, Texture2D (&Sprites)[3], GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color = glm::vec4(1.0f));
     
     // 更新
     void Move(GLfloat dt);
     void Reset(glm::vec2 position, glm::vec2 velocity);
+    
+    // 吃食物
+    void EatFood(glm::vec2 foodPosition);
     
     // 渲染
     void Draw(SpriteRenderer &renderer);
@@ -49,6 +52,7 @@ public:
 private:
     GLfloat     NodeDistance;// 节点间的距离
     void LoadNodes();
+    void AddTailNode();
     void MoveHead();
     void MoveBody1(GLfloat dt);
     void MoveBody2(GLfloat dt);
