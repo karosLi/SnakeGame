@@ -28,7 +28,7 @@ public:
     std::vector<Texture2D> Sprites;// 纹理数组
     std::vector<glm::vec4> Colors;// 颜色数组
     
-    FoodsManager(glm::vec2 mapOrigin, glm::vec2 mapSize, std::vector<Texture2D> sprites, std::vector<glm::vec4> colors);
+    FoodsManager(glm::vec2 mapOrigin, glm::vec2 mapSize, std::vector<Texture2D> sprites, std::vector<glm::vec4> colors = {});
     
     // 生成一批纹理食物
     void GenerateSpriteFoods(GLuint foodCount, glm::vec2 foodSize);

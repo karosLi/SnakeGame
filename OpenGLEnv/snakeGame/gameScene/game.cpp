@@ -54,6 +54,10 @@ const glm::vec2 INITIAL_SNAKE_DIRECTION(0.0f, -1.0f);// 默认向上
 // 食物管理
 FoodsManager        *FoodsMgr;
 
+void LoadTextures(GLuint count, std::string filePrefix);
+std::vector<Texture2D> GetSkinTextures(std::string headPrefix, std::string bodyPrefix, std::string tailPrefix, GLuint number);
+std::vector<Texture2D> GetTextures(GLuint count, std::string filePrefix);
+
 Game::Game(GLuint width, GLuint height)
     : State(GAME_MENU), Keys(), Width(width), Height(height), Lives(3)
 {
@@ -105,13 +109,20 @@ void Game::Init()
     /// 加载纹理
     // 加载一个空的纹理
     ResourceManager::LoadEmptyTexture();
+//    // 蛇纹理
+//    ResourceManager::LoadTexture("skin_1_head.png", GL_TRUE, "snake_head");
+//    ResourceManager::LoadTexture("skin_1_body.png", GL_TRUE, "snake_body");
+//    // 粒子
+//    ResourceManager::LoadTexture("particle.png", GL_TRUE, "particle");
+//    // 食物
+//    ResourceManager::LoadTexture("food_0.png", GL_TRUE, "food_0");
+//
     // 蛇纹理
-    ResourceManager::LoadTexture("snake_head_0.png", GL_TRUE, "snake_head");
-    ResourceManager::LoadTexture("snake_body_0.png", GL_TRUE, "snake_body");
-    // 粒子
-    ResourceManager::LoadTexture("particle.png", GL_TRUE, "particle");
-    // 食物
-    ResourceManager::LoadTexture("food_0.png", GL_TRUE, "food_0");
+    LoadTextures(6, "skin_head");
+    LoadTextures(6, "skin_body");
+    LoadTextures(6, "skin_tail");
+    // 加载食物
+    LoadTextures(14, "food");
     
     /// 创建渲染对象
     // 创建精灵渲染对象
@@ -133,16 +144,14 @@ void Game::Init()
     
     /// 创建精灵
     // 蛇
-    std::vector<Texture2D> snakeSprites = {ResourceManager::GetTexture("snake_head"), ResourceManager::GetTexture("snake_body"), ResourceManager::GetTexture("snake_body")};
+    std::vector<Texture2D> snakeSprites = GetSkinTextures("skin_head", "skin_body", "skin_tail", 4);
     // 由于加载的蛇头和身体纹理方向是向上的的，为了让蛇纹理方向与蛇移动方向一致，需要旋转蛇的节点，所以需要顺时针旋转 90 度
     Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(this->GridSize * 2, this->GridSize * 2), 5, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
     
     // 食物
-    std::vector<Texture2D> foodSprites = {ResourceManager::GetTexture("food_0"), ResourceManager::GetTexture("food_0"), ResourceManager::GetTexture("food_0")};
-    std::vector<glm::vec4> foodColors = {glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)};
-    FoodsMgr = new FoodsManager(this->MapOrigin, glm::vec2(this->MapWidth, this->MapHeight), foodSprites, foodColors);
-    FoodsMgr->GenerateSpriteFoods(5, glm::vec2(this->GridSize * 2, this->GridSize * 2));
-    FoodsMgr->GenerateColorFoods(5, glm::vec2(this->GridSize, this->GridSize));
+    std::vector<Texture2D> foodSprites = GetTextures(14, "food");
+    FoodsMgr = new FoodsManager(this->MapOrigin, glm::vec2(this->MapWidth, this->MapHeight), foodSprites);
+    FoodsMgr->GenerateSpriteFoods(15, glm::vec2(this->GridSize * 2, this->GridSize * 2));
 }
 
 void Game::ProcessInput(float dt)
@@ -332,7 +341,9 @@ void Game::Render()
     
     if (this->State == GAME_MENU)// 菜单
     {
-        Text->RenderText("Press SPACE to start", 140.0f, MapHeight / 2, 1.0f);
+        Text->RenderText("Press SPACE to start", 140.0f, MapHeight / 2  - 40.0, 1.0f);
+        Text->RenderText("Press W/S/A/D to control direction", 50.0f, MapHeight / 2, 1.0f);
+        Text->RenderText("Press + to speed up", 145.0f, MapHeight / 2 + 40, 1.0f);
     }
 }
 
@@ -391,4 +402,50 @@ GLboolean CheckCollision(GameObject &one, GameObject &two) // AABB - AABB collis
         two.Position.y + two.Size.y >= one.Position.y;
     // 只有两个轴向都有碰撞时才碰撞
     return collisionX && collisionY;
+}
+
+void LoadTextures(GLuint count, std::string filePrefix)
+{
+    for (GLuint i = 0; i < count; i++) {
+        std::stringstream str, name;
+        str << filePrefix << "_" << i << ".png";
+        name << filePrefix << "_" << i;
+        ResourceManager::LoadTexture(str.str().c_str(), GL_TRUE, name.str());
+    }
+}
+
+std::vector<Texture2D> GetSkinTextures(std::string headPrefix, std::string bodyPrefix, std::string tailPrefix, GLuint number)
+{
+    std::vector<Texture2D> sprites;
+    for (GLuint i = 0; i < 3; i++) {
+        
+        std::stringstream name;
+        if (i == 0) {
+            name << headPrefix;
+        } else if (i == 1) {
+            name << bodyPrefix;
+        } else if (i == 2) {
+            name << tailPrefix;
+        }
+        name << "_" << number;
+        
+        Texture2D sprite = ResourceManager::GetTexture(name.str());
+        sprites.push_back(sprite);
+    }
+    
+    return sprites;
+}
+
+std::vector<Texture2D> GetTextures(GLuint count, std::string filePrefix)
+{
+    std::vector<Texture2D> sprites;
+    for (GLuint i = 0; i < count; i++) {
+        std::stringstream name;
+        name << filePrefix << "_" << i;
+        
+        Texture2D sprite = ResourceManager::GetTexture(name.str());
+        sprites.push_back(sprite);
+    }
+    
+    return sprites;
 }
