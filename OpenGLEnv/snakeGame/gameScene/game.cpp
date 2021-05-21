@@ -55,7 +55,7 @@ const glm::vec2 INITIAL_SNAKE_DIRECTION(0.0f, -1.0f);// 默认向上
 FoodsManager        *FoodsMgr;
 
 Game::Game(GLuint width, GLuint height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), Lives(3)
+    : State(GAME_MENU), Keys(), Width(width), Height(height), Lives(3)
 {
     glm::vec2 mapOrigin = glm::vec2(WINDOW_EDGE, WINDOW_EDGE);
     GLfloat mapWidth = this->Width - 2 * WINDOW_EDGE;
@@ -215,31 +215,20 @@ void Game::ProcessInput(float dt)
             Snake->SpeedUp = GL_FALSE;
         }
         
-        if (this->Keys[GLFW_KEY_SPACE])// 按下空格表示游戏开始
+        if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER])// 按下回车键表示游戏继续
         {
             Snake->Pause = GL_FALSE;
+            this->KeysProcessed[GLFW_KEY_ENTER] = GL_TRUE;
         }
     }
     
     if (this->State == GAME_MENU)// 菜单
     {
-        if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER])
+        if (this->Keys[GLFW_KEY_SPACE] && !this->KeysProcessed[GLFW_KEY_SPACE]) // 按下空格表示游戏开始
         {
             this->State = GAME_ACTIVE;
-            this->KeysProcessed[GLFW_KEY_ENTER] = GL_TRUE;
-        }
-        if (this->Keys[GLFW_KEY_W] && !this->KeysProcessed[GLFW_KEY_W])
-        {
-            this->Level = (this->Level + 1) % 4;
-            this->KeysProcessed[GLFW_KEY_W] = GL_TRUE;
-        }
-        if (this->Keys[GLFW_KEY_S] && !this->KeysProcessed[GLFW_KEY_S])
-        {
-            if (this->Level > 0)
-                --this->Level;
-            else
-                this->Level = 3;
-            this->KeysProcessed[GLFW_KEY_S] = GL_TRUE;
+            Snake->Pause = GL_FALSE;
+            this->KeysProcessed[GLFW_KEY_SPACE] = GL_TRUE;
         }
     }
     
@@ -270,6 +259,22 @@ void Game::Update(float dt)
         ShakeTime -= dt;
         if (ShakeTime <= 0.0f)
             Effects->Shake = GL_FALSE;
+    }
+    
+    // 游戏结束检测
+    if (Snake->Died) {
+        // 如果蛇死亡则激活shake特效
+        ShakeTime = 0.05f;
+        Effects->Shake = true;
+        
+        --this->Lives;
+        // 玩家是否已失去所有生命值? : 游戏结束
+        if (this->Lives == 0)
+        {
+            this->ResetLevel();
+            this->State = GAME_MENU;
+        }
+        this->ResetPlayer();
     }
 }
 
@@ -313,24 +318,21 @@ void Game::Render()
         Effects->Render(glfwGetTime());
         
         /// 文本绘制
-        std::stringstream ss; ss << this->Lives;
-        Text->RenderText("Lives:" + ss.str(), 5.0f, 5.0f, 1.0f);
+        std::stringstream lives; lives << this->Lives;
+        Text->RenderText("Lives:" + lives.str(), 5.0f, 5.0f, 1.0f);
+        
+        std::stringstream nodeLength; nodeLength << Snake->Nodes.size();
+        Text->RenderText("Score:" + nodeLength.str(), 150.0f, 5.0f, 1.0f);
+    }
+    
+    if (this->State == GAME_ACTIVE && Snake->Pause)// 游戏中
+    {
+        Text->RenderText("Press ENTER to reborn", 140.0f, MapHeight / 2, 1.0f);
     }
     
     if (this->State == GAME_MENU)// 菜单
     {
-        Text->RenderText("Press ENTER to start", 250.0f, Height / 2, 1.0f);
-        Text->RenderText("Press W or S to select level", 245.0f, Height / 2 + 20.0f, 0.75f);
-    }
-    
-    if (this->State == GAME_WIN)// 游戏胜利
-    {
-        Text->RenderText(
-            "You WON!!!", 320.0, Height / 2 - 20.0, 1.0, glm::vec3(0.0, 1.0, 0.0)
-        );
-        Text->RenderText(
-            "Press ENTER to retry or ESC to quit", 130.0, Height / 2, 1.0, glm::vec3(1.0, 1.0, 0.0)
-        );
+        Text->RenderText("Press SPACE to start", 140.0f, MapHeight / 2, 1.0f);
     }
 }
 
@@ -340,6 +342,7 @@ GLboolean CheckCollision(GameObject &one, GameObject &two);// AABB 碰撞检测
 // 碰撞检测
 void Game::DoCollisions()
 {
+    // 蛇是否碰到了食物
     for (GameObject &food : FoodsMgr->Foods) {
         if (!food.Destroyed) {
             GLboolean collision = CheckCollision(Snake->Nodes[0], food);
@@ -349,16 +352,29 @@ void Game::DoCollisions()
             }
         }
     }
+    
+    // 蛇是否有撞墙
+    if (Snake->Position.x < this->MapOrigin.x ||
+        Snake->Position.y < this->MapOrigin.y ||
+        Snake->Position.x > (this->MapOrigin.x + this->Width) ||
+        Snake->Position.y > (this->MapOrigin.y + this->Height)) {
+        Snake->Die();
+    }
 }
 
 void Game::ResetLevel()
 {
     this->Lives = 3;
+    Snake->Reset(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY);
+    Snake->Restart();
+    Snake->Pause = GL_TRUE;
 }
 
 void Game::ResetPlayer()
 {
-    
+    Snake->Reset(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY);
+    Snake->Reborn();
+    Snake->Pause = GL_TRUE;
 }
 
 /// AABB 碰撞检测

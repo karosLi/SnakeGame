@@ -9,8 +9,9 @@
 #include "resource_manager.h"
 
 // 构造函数
-SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, std::vector<Texture2D> sprites, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE) {
+SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, std::vector<Texture2D> sprites, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE), Died(GL_FALSE) {
     this->NodeDistance = this->NodeSize.x * 1.0f;
+    this->SnakeBornCount = initialLength;
     this->LoadNodes();
 }
 
@@ -18,7 +19,7 @@ void SnakeObject::LoadNodes() {
     // 清空过期数据
     this->Nodes.clear();
     
-    for (GLuint i = 0; i < this->InitialLength; i++) {
+    for (GLuint i = 0; i < this->SnakeBornCount; i++) {
         this->AddTailNode();
     }
 }
@@ -63,6 +64,28 @@ void SnakeObject::AddTailNode()
 void SnakeObject::EatFood(glm::vec2 foodPosition)
 {
     this->AddTailNode();
+}
+
+void SnakeObject::Die()
+{
+    this->Died = GL_TRUE;
+}
+
+void SnakeObject::Reborn()
+{
+    this->Died = GL_FALSE;
+    GLuint size = static_cast<GLuint>(this->Nodes.size());
+    this->SnakeBornCount = size;
+    
+    this->LoadNodes();
+}
+
+void SnakeObject::Restart()
+{
+    this->Died = GL_FALSE;
+    this->SnakeBornCount = this->InitialLength;
+    
+    this->LoadNodes();
 }
 
 void SnakeObject::MoveHead() {
@@ -193,10 +216,15 @@ void SnakeObject::MoveBody2(GLfloat dt) {
 }
 
 void SnakeObject::Reset(glm::vec2 position, glm::vec2 velocity) {
-    
+    this->Position = position;
+    this->Velocity = velocity;
 }
 
 void SnakeObject::Draw(SpriteRenderer &renderer) {
+    if (this->Died) {
+        return;
+    }
+    
     GLuint size = static_cast<GLuint>(this->Nodes.size());
     for (GLint i = size - 1; i >= 0; i--) {
         this->Nodes[i].Draw(renderer);

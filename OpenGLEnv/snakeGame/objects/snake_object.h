@@ -34,6 +34,7 @@ public:
     
     GLboolean   SpeedUp;// 蛇是否加速
     GLboolean   Pause;// 蛇停止移动
+    GLboolean   Died;// 蛇是否死亡
     
     // 构造函数
     SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, std::vector<Texture2D> sprites, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color = glm::vec4(1.0f));
@@ -45,10 +46,18 @@ public:
     // 吃食物
     void EatFood(glm::vec2 foodPosition);
     
+    // 蛇死亡
+    void Die();
+    // 蛇复活
+    void Reborn();
+    // 蛇重新开始
+    void Restart();
+    
     // 渲染
     void Draw(SpriteRenderer &renderer);
     
 private:
+    GLuint      SnakeBornCount;// 蛇出生长度
     GLfloat     NodeDistance;// 节点间的距离
     void LoadNodes();
     void AddTailNode();

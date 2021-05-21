@@ -349,6 +349,7 @@
 		7C9A2DE02653A4650054EA21 /* snake_body_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = snake_body_0.png; sourceTree = "<group>"; };
 		7C9A2DE22656406D0054EA21 /* foods_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = foods_manager.cpp; sourceTree = "<group>"; };
 		7C9A2DE32656406D0054EA21 /* foods_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = foods_manager.h; sourceTree = "<group>"; };
+		7C9A2DE6265752100054EA21 /* random_tool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random_tool.h; sourceTree = "<group>"; };
 		7CC8BDFA2616B9DC00D97563 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
 		7CC8BDFE2616B9DC00D97563 /* glfw3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3.h; sourceTree = "<group>"; };
 		7CC8BDFF2616B9DC00D97563 /* glfw3native.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfw3native.h; sourceTree = "<group>"; };
@@ -991,6 +992,7 @@
 		7C9A2D58264D18AE0054EA21 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				7C9A2DE5265751FC0054EA21 /* math */,
 				7C9A2D59264D18AE0054EA21 /* resource_manager */,
 				7C9A2D5C264D18AE0054EA21 /* texture */,
 				7C9A2D5F264D18AE0054EA21 /* shader */,
@@ -1088,6 +1090,14 @@
 				7C9A2DA7264D248F0054EA21 /* line.fs */,
 			);
 			path = line;
+			sourceTree = "<group>";
+		};
+		7C9A2DE5265751FC0054EA21 /* math */ = {
+			isa = PBXGroup;
+			children = (
+				7C9A2DE6265752100054EA21 /* random_tool.h */,
+			);
+			path = math;
 			sourceTree = "<group>";
 		};
 		7CC8BDF82616B9DC00D97563 /* GLFW */ = {

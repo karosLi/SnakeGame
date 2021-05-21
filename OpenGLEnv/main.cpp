@@ -102,8 +102,6 @@ int main(int argc, char *argv[])
     
     // Initialize game
     SnakeName.Init();
-    // Start Game within Menu State
-    SnakeName.State = GAME_ACTIVE;
     
     while (!glfwWindowShouldClose(window))
     {
