@@ -36,6 +36,18 @@ class Game
         GLfloat     MapWidth;// 游戏场景宽度
         GLfloat     MapHeight;// 游戏场景高度
         GLuint      GridSize;// 格子大小
+    
+        // 更新摄像机
+        void UpdateCamera();
+        // 碰撞检测
+        void DoCollisions();
+        // 生成道具
+        void SpawnPowerUps(GameObject &block);
+        // 更新所有激活的道具
+        void UpdatePowerUps(GLfloat dt);
+        // 重置游戏
+        void ResetLevel();
+        void ResetPlayer();
     public:
         // 游戏状态
         GameState  State;
@@ -57,19 +69,8 @@ class Game
         void ProcessInput(GLfloat dt);
         // 根据时间更新位置
         void Update(GLfloat dt);
-        // 更新摄像机
-        void UpdateCamera();
         // 渲染画面
         void Render();
-        // 碰撞检测
-        void DoCollisions();
-        // 生成道具
-        void SpawnPowerUps(GameObject &block);
-        // 更新所有激活的道具
-        void UpdatePowerUps(GLfloat dt);
-        // 重置游戏
-        void ResetLevel();
-        void ResetPlayer();
 };
 
 #endif /* sanke_game_hpp */
