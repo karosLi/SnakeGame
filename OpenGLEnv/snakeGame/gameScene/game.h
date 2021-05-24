@@ -57,6 +57,8 @@ class Game
         void ProcessInput(GLfloat dt);
         // 根据时间更新位置
         void Update(GLfloat dt);
+        // 更新摄像机
+        void UpdateCamera();
         // 渲染画面
         void Render();
         // 碰撞检测

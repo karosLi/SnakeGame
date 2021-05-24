@@ -21,11 +21,8 @@
 #include "snake_object.h"
 #include "foods_manager.h"
 
-#define WINDOW_EDGE 0
-#define GRID_ROWS 50
-#define GRID_COLS 50
-
-#define GRID_UNIT
+GLuint GRID_ROWS = 0;
+GLuint GRID_COLS = 0;
 
 /// 渲染
 // 四边形渲染对象（可以渲染正方形，长方形和球形）
@@ -48,7 +45,7 @@ TextRenderer        *Text;
 // 蛇
 SnakeObject         *Snake;
 // 初始化蛇的速率和方向
-const GLfloat   INITIAL_SNAKE_VELOCITY = 100;
+const GLfloat   INITIAL_SNAKE_VELOCITY = 150;
 const glm::vec2 INITIAL_SNAKE_DIRECTION(0.0f, -1.0f);// 默认向上
 
 // 食物管理
@@ -61,14 +58,17 @@ std::vector<Texture2D> GetTextures(GLuint count, std::string filePrefix);
 Game::Game(GLuint width, GLuint height)
     : State(GAME_MENU), Keys(), Width(width), Height(height), Lives(3)
 {
-    glm::vec2 mapOrigin = glm::vec2(WINDOW_EDGE, WINDOW_EDGE);
-    GLfloat mapWidth = this->Width - 2 * WINDOW_EDGE;
-    GLfloat mapHeight = this->Height - 2 * WINDOW_EDGE;
+    glm::vec2 mapOrigin = glm::vec2(0, 0);
+    GLuint mapScale = 4;
+    GLfloat mapWidth = this->Width * mapScale;
+    GLfloat mapHeight = this->Height * mapScale;
     
     this->MapOrigin = mapOrigin;
     this->MapWidth = mapWidth;
     this->MapHeight = mapHeight;
-    this->GridSize = mapWidth / GRID_ROWS;
+    this->GridSize = 24.0;
+    GRID_ROWS = this->MapWidth / 24.0;
+    GRID_COLS = this->MapHeight / 24.0;
 }
 
 Game::~Game()
@@ -78,6 +78,8 @@ Game::~Game()
     delete Particles;
     delete Effects;
     delete Text;
+    delete Snake;
+    delete FoodsMgr;
 }
 
 void Game::Init()
@@ -109,14 +111,6 @@ void Game::Init()
     /// 加载纹理
     // 加载一个空的纹理
     ResourceManager::LoadEmptyTexture();
-//    // 蛇纹理
-//    ResourceManager::LoadTexture("skin_1_head.png", GL_TRUE, "snake_head");
-//    ResourceManager::LoadTexture("skin_1_body.png", GL_TRUE, "snake_body");
-//    // 粒子
-//    ResourceManager::LoadTexture("particle.png", GL_TRUE, "particle");
-//    // 食物
-//    ResourceManager::LoadTexture("food_0.png", GL_TRUE, "food_0");
-//
     // 蛇纹理
     LoadTextures(6, "skin_head");
     LoadTextures(6, "skin_body");
@@ -146,12 +140,12 @@ void Game::Init()
     // 蛇
     std::vector<Texture2D> snakeSprites = GetSkinTextures("skin_head", "skin_body", "skin_tail", 4);
     // 由于加载的蛇头和身体纹理方向是向上的的，为了让蛇纹理方向与蛇移动方向一致，需要旋转蛇的节点，所以需要顺时针旋转 90 度
-    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(this->GridSize * 2, this->GridSize * 2), 5, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
+    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(24, 24), 5, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
     
     // 食物
     std::vector<Texture2D> foodSprites = GetTextures(14, "food");
     FoodsMgr = new FoodsManager(this->MapOrigin, glm::vec2(this->MapWidth, this->MapHeight), foodSprites);
-    FoodsMgr->GenerateSpriteFoods(15, glm::vec2(this->GridSize * 2, this->GridSize * 2));
+    FoodsMgr->GenerateSpriteFoods(300, glm::vec2(24, 24));
 }
 
 void Game::ProcessInput(float dt)
@@ -256,6 +250,8 @@ void Game::Update(float dt)
 {
     Snake->Move(dt);
     
+    this->UpdateCamera();
+    
     FoodsMgr->Update(dt);
     
     this->DoCollisions();
@@ -287,6 +283,26 @@ void Game::Update(float dt)
     }
 }
 
+void Game::UpdateCamera()
+{
+    // 摄像机跟随蛇头移动
+    glm::vec2 snakePostion = Snake->Position;
+    
+    GLfloat left = snakePostion.x - static_cast<float>(this->Width / 2.0);
+    GLfloat right = left + static_cast<float>(this->Width);
+    GLfloat top = snakePostion.y - static_cast<float>(this->Height / 2.0);
+    GLfloat bottom = top + static_cast<float>(this->Height);
+    glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+    
+    Shader spriteShader = ResourceManager::GetShader("sprite");
+    spriteShader.Use();
+    spriteShader.SetMatrix4("projection", projection);
+    
+    Shader lineShader = ResourceManager::GetShader("line");
+    lineShader.Use();
+    lineShader.SetMatrix4("projection", projection);
+}
+
 void Game::Render()
 {
     if (this->State == GAME_ACTIVE || this->State == GAME_MENU || this->State == GAME_WIN)// 底部游戏渲染
@@ -299,9 +315,13 @@ void Game::Render()
         GLfloat mapHeight = this->MapHeight;
         GLfloat gridSize = this->GridSize;
         
-        // 绘制背景
-        Texture2D texture = ResourceManager::GetEmptyTexture();
-        SpriteRender->DrawSprite(texture, mapOrigin, glm::vec2(mapWidth, mapHeight), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        // 绘制场景背景
+        Texture2D sceneTexture = ResourceManager::GetEmptyTexture();
+        SpriteRender->DrawSprite(sceneTexture, glm::vec2(-static_cast<float>(this->Width / 2.0), -static_cast<float>(this->Height / 2.0)), glm::vec2(mapWidth + this->Width, mapHeight + this->Height), glm::vec4(0.35f, 0.68f, 0.38f, 1.0f));
+        
+        // 绘制地图背景
+        Texture2D bgTexture = ResourceManager::GetEmptyTexture();
+        SpriteRender->DrawSprite(bgTexture, mapOrigin, glm::vec2(mapWidth, mapHeight), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
         
         // 绘制网格
         for (GLuint row = 0; row < GRID_ROWS; row++) {
@@ -336,14 +356,14 @@ void Game::Render()
     
     if (this->State == GAME_ACTIVE && Snake->Pause)// 游戏中
     {
-        Text->RenderText("Press ENTER to reborn", 140.0f, MapHeight / 2, 1.0f);
+        Text->RenderText("Press ENTER to reborn", 140.0f, this->Width / 2, 1.0f);
     }
     
     if (this->State == GAME_MENU)// 菜单
     {
-        Text->RenderText("Press SPACE to start", 140.0f, MapHeight / 2  - 40.0, 1.0f);
-        Text->RenderText("Press W/S/A/D to control direction", 50.0f, MapHeight / 2, 1.0f);
-        Text->RenderText("Press + to speed up", 145.0f, MapHeight / 2 + 40, 1.0f);
+        Text->RenderText("Press SPACE to start", 140.0f, this->Width / 2  - 40.0, 1.0f);
+        Text->RenderText("Press W/S/A/D to control direction", 50.0f, this->Height / 2, 1.0f);
+        Text->RenderText("Press + to speed up", 145.0f, this->Height / 2 + 40, 1.0f);
     }
 }
 
@@ -367,8 +387,8 @@ void Game::DoCollisions()
     // 蛇是否有撞墙
     if (Snake->Position.x < this->MapOrigin.x ||
         Snake->Position.y < this->MapOrigin.y ||
-        Snake->Position.x > (this->MapOrigin.x + this->Width) ||
-        Snake->Position.y > (this->MapOrigin.y + this->Height)) {
+        Snake->Position.x + Snake->NodeSize.x > (this->MapOrigin.x + this->MapWidth) ||
+        Snake->Position.y + Snake->NodeSize.y > (this->MapOrigin.y + this->MapHeight)) {
         Snake->Die();
     }
 }
