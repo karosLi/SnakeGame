@@ -17,6 +17,7 @@
 #include "particle_generator.h"
 #include "post_processor.h"
 #include "text_renderer.h"
+#include "camera_2d.h"
 
 #include "snake_object.h"
 #include "foods_manager.h"
@@ -40,6 +41,9 @@ GLfloat             ShakeTime = 0.0f;
 
 // 文本
 TextRenderer        *Text;
+
+// 摄像机
+Camera2D            *Camera;
 
 /// 精灵
 // 蛇
@@ -78,18 +82,15 @@ Game::~Game()
     delete Particles;
     delete Effects;
     delete Text;
+    delete Camera;
     delete Snake;
     delete FoodsMgr;
 }
 
 void Game::Init()
 {
-    /// 设置投影矩阵 - 左上角为原点
-    glm::mat4 projection = glm::ortho(0.0f,
-                                      static_cast<float>(this->Width),
-                                      static_cast<float>(this->Height),
-                                      0.0f,
-                                      -1.0f, 1.0f);
+    /// 安装摄像机
+    Camera = new Camera2D(this->Width, this->Height);
     
     /// 加载着色器
     ResourceManager::LoadShader("sprite.vs", "sprite.fs", nullptr, "sprite");
@@ -101,11 +102,9 @@ void Game::Init()
     Shader spriteShader = ResourceManager::GetShader("sprite");
     spriteShader.Use();
     spriteShader.SetInteger("image", 0);
-    spriteShader.SetMatrix4("projection", projection);
     
     Shader lineShader = ResourceManager::GetShader("line");
     lineShader.Use();
-    lineShader.SetMatrix4("projection", projection);
     
     
     /// 加载纹理
@@ -286,13 +285,9 @@ void Game::Update(float dt)
 void Game::UpdateCamera()
 {
     // 摄像机跟随蛇头移动
-    glm::vec2 snakePostion = Snake->Position;
-    
-    GLfloat left = snakePostion.x - static_cast<float>(this->Width / 2.0);
-    GLfloat right = left + static_cast<float>(this->Width);
-    GLfloat top = snakePostion.y - static_cast<float>(this->Height / 2.0);
-    GLfloat bottom = top + static_cast<float>(this->Height);
-    glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+    glm::vec2 snakePostion = glm::vec2(Snake->Position.x + Snake->NodeSize.x /2.0, Snake->Position.y + Snake->NodeSize.y /2.0);
+    Camera->UpdateFocusPosition(snakePostion);
+    glm::mat4 projection = Camera->GetProjectionMatrix();
     
     Shader spriteShader = ResourceManager::GetShader("sprite");
     spriteShader.Use();

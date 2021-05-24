@@ -206,6 +206,7 @@
 		7CC8DA982657C5200068E49C /* skin_body_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CC8DA8C2657C5200068E49C /* skin_body_5.png */; };
 		7CC8DA992657C5200068E49C /* skin_tail_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CC8DA8D2657C5200068E49C /* skin_tail_5.png */; };
 		7CC8DA9A2657C5200068E49C /* skin_head_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CC8DA8E2657C5200068E49C /* skin_head_5.png */; };
+		7CC8DA9E265B9F890068E49C /* camera_2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7CC8DA9C265B9F890068E49C /* camera_2d.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -674,6 +675,8 @@
 		7CC8DA8C2657C5200068E49C /* skin_body_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin_body_5.png; sourceTree = "<group>"; };
 		7CC8DA8D2657C5200068E49C /* skin_tail_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin_tail_5.png; sourceTree = "<group>"; };
 		7CC8DA8E2657C5200068E49C /* skin_head_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin_head_5.png; sourceTree = "<group>"; };
+		7CC8DA9C265B9F890068E49C /* camera_2d.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera_2d.cpp; sourceTree = "<group>"; };
+		7CC8DA9D265B9F890068E49C /* camera_2d.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = camera_2d.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1048,6 +1051,7 @@
 		7C9A2D58264D18AE0054EA21 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				7CC8DA9B265B9F6C0068E49C /* camera */,
 				7C9A2DE5265751FC0054EA21 /* math */,
 				7C9A2D59264D18AE0054EA21 /* resource_manager */,
 				7C9A2D5C264D18AE0054EA21 /* texture */,
@@ -1601,6 +1605,15 @@
 			path = skin5;
 			sourceTree = "<group>";
 		};
+		7CC8DA9B265B9F6C0068E49C /* camera */ = {
+			isa = PBXGroup;
+			children = (
+				7CC8DA9D265B9F890068E49C /* camera_2d.h */,
+				7CC8DA9C265B9F890068E49C /* camera_2d.cpp */,
+			);
+			path = camera;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1930,6 +1943,7 @@
 				7C9A2BCE264BCA470054EA21 /* game.cpp in Sources */,
 				7CC8C3FF261C814800D97563 /* dummy.cpp in Sources */,
 				7CC8BE102616BF6000D97563 /* glad.c in Sources */,
+				7CC8DA9E265B9F890068E49C /* camera_2d.cpp in Sources */,
 				7C9A2DA5264D228B0054EA21 /* line_renderer.cpp in Sources */,
 				7C9A2D6E264D18AE0054EA21 /* resource_manager.cpp in Sources */,
 				7C9A2DE42656406D0054EA21 /* foods_manager.cpp in Sources */,
