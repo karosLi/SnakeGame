@@ -49,10 +49,11 @@ Camera2D            *Camera;
 // 蛇
 SnakeObject         *Snake;
 // 初始化蛇的速率和方向
-const GLfloat   INITIAL_SNAKE_VELOCITY = 150;
-const glm::vec2 INITIAL_SNAKE_DIRECTION(0.0f, -1.0f);// 默认向上
+const GLfloat       INITIAL_SNAKE_VELOCITY = 150;
+const glm::vec2     INITIAL_SNAKE_DIRECTION(0.0f, -1.0f);// 默认向上
 
 // 食物管理
+const GLfloat       INITIAL_FOOD_MAGNET_VELOCITY = 200;// 食物磁吸速率
 FoodsManager        *FoodsMgr;
 
 void LoadTextures(GLuint count, std::string filePrefix);
@@ -253,7 +254,7 @@ void Game::Update(float dt)
     
     FoodsMgr->Update(dt);
     
-    this->DoCollisions();
+    this->DoCollisions(dt);
     
     Particles->Update(dt, Snake->Nodes[0], 3);
     
@@ -366,10 +367,25 @@ void Game::Render()
 GLboolean CheckCollision(GameObject &one, GameObject &two);// AABB 碰撞检测
 
 // 碰撞检测
-void Game::DoCollisions()
+void Game::DoCollisions(float dt)
 {
+    // 磁吸食物
+    glm::vec2 snakePostion = glm::vec2(Snake->Position.x + Snake->NodeSize.x /2.0, Snake->Position.y + Snake->NodeSize.y /2.0);
+    for (GameObject &food : FoodsMgr->Foods) {
+        glm::vec2 foodPostion = glm::vec2(food.Position.x + food.Size.x /2.0, food.Position.y + food.Size.y /2.0);
+        GLfloat distance = glm::distance(snakePostion, foodPostion);
+        if (distance < 50) {
+            glm::vec2 moveDir = glm::normalize(snakePostion - foodPostion);
+            food.Position += moveDir * INITIAL_FOOD_MAGNET_VELOCITY * dt;
+        }
+    }
+    
     // 蛇是否碰到了食物
     for (GameObject &food : FoodsMgr->Foods) {
+        if (!(food.EscapedTime - 0.0f <= glm::epsilon<GLfloat>())) {// 过去的时间不等于 0，说明正在动画
+            continue;
+        }
+        
         if (!food.Destroyed) {
             GLboolean collision = CheckCollision(Snake->Nodes[0], food);
             if (collision) {

@@ -40,7 +40,7 @@ class Game
         // 更新摄像机
         void UpdateCamera();
         // 碰撞检测
-        void DoCollisions();
+        void DoCollisions(float dt);
         // 生成道具
         void SpawnPowerUps(GameObject &block);
         // 更新所有激活的道具
