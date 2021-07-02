@@ -13,6 +13,7 @@
 
 #include "resource_manager.h"
 #include "sprite_renderer.h"
+#include "sprite_batch_renderer.h"
 #include "line_renderer.h"
 #include "particle_generator.h"
 #include "post_processor.h"
@@ -28,6 +29,8 @@ GLuint GRID_COLS = 0;
 /// 渲染
 // 四边形渲染对象（可以渲染正方形，长方形和球形）
 SpriteRenderer      *SpriteRender;
+
+SpriteBatchRenderer *SpriteBatchRender;
 
 // 线段渲染对象
 LineRenderer        *LineRender;
@@ -95,6 +98,7 @@ void Game::Init()
     
     /// 加载着色器
     ResourceManager::LoadShader("sprite.vs", "sprite.fs", nullptr, "sprite");
+    ResourceManager::LoadShader("sprite_batch_renderer.vs", "sprite_batch_renderer.fs", nullptr, "sprite_batch");
     ResourceManager::LoadShader("line.vs", "line.fs", nullptr, "line");
     ResourceManager::LoadShader("particle.vs", "particle.fs", nullptr, "particle");
     ResourceManager::LoadShader("post_processing.vs", "post_processing.fs", nullptr, "postprocessing");
@@ -106,6 +110,9 @@ void Game::Init()
     
     Shader lineShader = ResourceManager::GetShader("line");
     lineShader.Use();
+    
+    Shader spriteBatchShader = ResourceManager::GetShader("sprite_batch");
+    
     
     
     /// 加载纹理
@@ -121,6 +128,7 @@ void Game::Init()
     /// 创建渲染对象
     // 创建精灵渲染对象
     SpriteRender = new SpriteRenderer(spriteShader);
+    SpriteBatchRender = new SpriteBatchRenderer(spriteBatchShader);
     // 创建线段渲染对象
     LineRender = new LineRenderer(lineShader);
     // 创建粒子发射器渲染对象
@@ -297,6 +305,10 @@ void Game::UpdateCamera()
     Shader lineShader = ResourceManager::GetShader("line");
     lineShader.Use();
     lineShader.SetMatrix4("projection", projection);
+    
+    Shader spriteBatchShader = ResourceManager::GetShader("sprite_batch");
+    spriteBatchShader.Use();
+    spriteBatchShader.SetMatrix4("projection", projection);
 }
 
 void Game::Render()
@@ -334,7 +346,9 @@ void Game::Render()
         Particles->Draw();
         
         // 绘制蛇
-        Snake->Draw(*SpriteRender);
+//        Snake->Draw(*SpriteRender);
+        
+        Snake->BatchDraw(*SpriteBatchRender);
         
         
         // End rendering to postprocessing quad
@@ -382,10 +396,6 @@ void Game::DoCollisions(float dt)
     
     // 蛇是否碰到了食物
     for (GameObject &food : FoodsMgr->Foods) {
-        if (!(food.EscapedTime - 0.0f <= glm::epsilon<GLfloat>())) {// 过去的时间不等于 0，说明正在动画
-            continue;
-        }
-        
         if (!food.Destroyed) {
             GLboolean collision = CheckCollision(Snake->Nodes[0], food);
             if (collision) {

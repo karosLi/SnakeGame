@@ -17,6 +17,7 @@
 
 #include "game_object.h"
 #include "texture.h"
+#include "sprite_batch_renderer.h"
 
 class SnakeObject {
     
@@ -55,6 +56,9 @@ public:
     
     // 渲染
     void Draw(SpriteRenderer &renderer);
+    // 批量渲染
+    void BatchDraw(SpriteBatchRenderer &renderer);
+    
     
 private:
     GLuint      SnakeBornCount;// 蛇出生长度

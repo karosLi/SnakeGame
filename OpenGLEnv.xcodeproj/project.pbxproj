@@ -14,6 +14,9 @@
 		7C5CEAEE2601D9AB00C9FD73 /* OpenGLEnvUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C5CEAED2601D9AB00C9FD73 /* OpenGLEnvUITests.m */; };
 		7C5CEB002601D9BB00C9FD73 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C5CEAFF2601D9BB00C9FD73 /* OpenGL.framework */; };
 		7C5CEB022601D9C100C9FD73 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C5CEB012601D9C100C9FD73 /* GLUT.framework */; };
+		7C5DE2D3268DC9310080D790 /* sprite_batch_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D1268DC9310080D790 /* sprite_batch_renderer.cpp */; };
+		7C5DE2D6268DD95A0080D790 /* sprite_batch_renderer.vs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D5268DD95A0080D790 /* sprite_batch_renderer.vs */; };
+		7C5DE2D8268DD9750080D790 /* sprite_batch_renderer.fs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */; };
 		7C9A2BBE264AA1FC0054EA21 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB3264AA1FC0054EA21 /* libpng16.a */; };
 		7C9A2BBF264AA1FC0054EA21 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB5264AA1FC0054EA21 /* libfreetype.a */; };
 		7C9A2BC0264AA1FC0054EA21 /* libbrotlidec-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB7264AA1FC0054EA21 /* libbrotlidec-static.a */; };
@@ -247,6 +250,10 @@
 		7C5CEAEF2601D9AB00C9FD73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7C5CEAFF2601D9BB00C9FD73 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		7C5CEB012601D9C100C9FD73 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		7C5DE2D1268DC9310080D790 /* sprite_batch_renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sprite_batch_renderer.cpp; sourceTree = "<group>"; };
+		7C5DE2D2268DC9310080D790 /* sprite_batch_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sprite_batch_renderer.h; sourceTree = "<group>"; };
+		7C5DE2D5268DD95A0080D790 /* sprite_batch_renderer.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_renderer.vs; sourceTree = "<group>"; };
+		7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_renderer.fs; sourceTree = "<group>"; };
 		7C9A2B03264A72390054EA21 /* ik_EStreamModes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_EStreamModes.h; sourceTree = "<group>"; };
 		7C9A2B04264A72390054EA21 /* ik_vec3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_vec3d.h; sourceTree = "<group>"; };
 		7C9A2B05264A72390054EA21 /* ik_IVirtualRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_IVirtualRefCounted.h; sourceTree = "<group>"; };
@@ -821,6 +828,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		7C5DE2D4268DC93B0080D790 /* batchsprite */ = {
+			isa = PBXGroup;
+			children = (
+				7C5DE2D2268DC9310080D790 /* sprite_batch_renderer.h */,
+				7C5DE2D1268DC9310080D790 /* sprite_batch_renderer.cpp */,
+				7C5DE2D5268DD95A0080D790 /* sprite_batch_renderer.vs */,
+				7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */,
+			);
+			path = batchsprite;
+			sourceTree = "<group>";
+		};
 		7C9A2B02264A72390054EA21 /* irrklang */ = {
 			isa = PBXGroup;
 			children = (
@@ -995,6 +1013,7 @@
 		7C9A2D43264D18AE0054EA21 /* render */ = {
 			isa = PBXGroup;
 			children = (
+				7C5DE2D4268DC93B0080D790 /* batchsprite */,
 				7C9A2DA2264D226D0054EA21 /* line */,
 				7C9A2D44264D18AE0054EA21 /* sprite */,
 				7C9A2D49264D18AE0054EA21 /* text */,
@@ -1808,6 +1827,7 @@
 				7CC8C3F3261C814800D97563 /* func_matrix_simd.inl in Resources */,
 				7C9A2D6B264D18AE0054EA21 /* particle.fs in Resources */,
 				7CC8C3F2261C814800D97563 /* func_vector_relational_simd.inl in Resources */,
+				7C5DE2D8268DD9750080D790 /* sprite_batch_renderer.fs in Resources */,
 				7CC8C43C261C814800D97563 /* extended_min_max.inl in Resources */,
 				7CC8C3F5261C814800D97563 /* func_geometric.inl in Resources */,
 				7CC8C40A261C814800D97563 /* type_mat4x4_simd.inl in Resources */,
@@ -1849,6 +1869,7 @@
 				7CC8C404261C814800D97563 /* func_geometric_simd.inl in Resources */,
 				7CC8DA9A2657C5200068E49C /* skin_head_5.png in Resources */,
 				7C9A2D68264D18AE0054EA21 /* post_processing.fs in Resources */,
+				7C5DE2D6268DD95A0080D790 /* sprite_batch_renderer.vs in Resources */,
 				7CC8C406261C814800D97563 /* type_vec2.inl in Resources */,
 				7CC8C412261C814800D97563 /* matrix_inverse.inl in Resources */,
 				7CC8C458261C814800D97563 /* fast_exponential.inl in Resources */,
@@ -1932,6 +1953,7 @@
 				7C9A2D70264D18AE0054EA21 /* shader.cpp in Sources */,
 				7C9A2D42264D18150054EA21 /* game_object.cpp in Sources */,
 				7C9A2D6D264D18AE0054EA21 /* particle_generator.cpp in Sources */,
+				7C5DE2D3268DC9310080D790 /* sprite_batch_renderer.cpp in Sources */,
 				7C9A2D62264D18AE0054EA21 /* sprite_renderer.cpp in Sources */,
 				7C9A2D6F264D18AE0054EA21 /* texture.cpp in Sources */,
 				7C9A2D66264D18AE0054EA21 /* text_renderer.cpp in Sources */,
@@ -2133,6 +2155,7 @@
 					"$(PROJECT_DIR)/OpenGLEnv/lib/z",
 					"$(PROJECT_DIR)/OpenGLEnv/lib/bzip2",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.karos.OpenGL.OpenGLEnv;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2168,6 +2191,7 @@
 					"$(PROJECT_DIR)/OpenGLEnv/lib/z",
 					"$(PROJECT_DIR)/OpenGLEnv/lib/bzip2",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.karos.OpenGL.OpenGLEnv;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

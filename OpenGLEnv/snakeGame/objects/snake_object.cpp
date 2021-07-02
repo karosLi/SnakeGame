@@ -7,6 +7,8 @@
 
 #include "snake_object.h"
 #include "resource_manager.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 // 构造函数
 SnakeObject::SnakeObject(glm::vec2 position, glm::vec2 nodeSize, GLfloat initialLength, std::vector<Texture2D> sprites, GLfloat spriteRotation, glm::vec2 velocity, glm::vec4 color): Position(position), NodeSize(nodeSize), InitialLength(initialLength), Sprites(sprites), SpriteRotation(spriteRotation), Velocity(velocity), Color(color), Pause(GL_TRUE), SpeedUp(GL_FALSE), Died(GL_FALSE) {
@@ -225,8 +227,35 @@ void SnakeObject::Draw(SpriteRenderer &renderer) {
         return;
     }
     
+    GLfloat t0 = glfwGetTime();
     GLuint size = static_cast<GLuint>(this->Nodes.size());
     for (GLint i = size - 1; i >= 0; i--) {
         this->Nodes[i].Draw(renderer);
     }
+    GLfloat t1 = glfwGetTime();
+//    printf("SnakeObject::Draw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
+}
+
+void SnakeObject::BatchDraw(SpriteBatchRenderer &renderer) {
+    if (this->Died) {
+        return;
+    }
+    
+    GLfloat t0 = glfwGetTime();
+    
+//    std::vector<GameObject> head;
+//    head.push_back(this->Nodes[0]);
+//
+//    std::vector<GameObject> bodys;
+//    std::copy_if(this->Nodes.begin() + 1, this->Nodes.end(), std::back_inserter(bodys), [](GameObject &node){
+//        return GL_TRUE;
+//    });
+//
+//    renderer.DrawSprites(head, head[0].Sprite);
+//    renderer.DrawSprites(bodys, bodys[0].Sprite);
+//
+    renderer.DrawSprites(this->Nodes, this->Nodes[0].Sprite);
+    
+    GLfloat t1 = glfwGetTime();
+//    printf("SnakeObject::BatchDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
 }
