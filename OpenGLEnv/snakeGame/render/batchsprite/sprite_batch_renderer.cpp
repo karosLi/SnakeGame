@@ -161,7 +161,7 @@ void SpriteBatchRenderer::initRenderData()
     glEnableVertexAttribArray(5);
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, size, (void*)(3 * vec4Size));
     glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, Matrix)));
+    glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, TextureIndex)));
     
     // 设置顶点属性更新方式，0 表示每个顶点更新，1 表示每个实例更新，2 每隔 2 个实例更新，以此类推
     glVertexAttribDivisor(2, 1);

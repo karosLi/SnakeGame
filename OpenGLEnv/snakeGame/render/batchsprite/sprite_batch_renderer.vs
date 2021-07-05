@@ -8,7 +8,7 @@ layout (location = 2) in mat4 aInstanceMatrix;
 layout (location = 6) in float aTexIndex;
 
 out vec2 TexCoords;
-out float TexIndex;
+flat out float TexIndex;
 
 uniform mat4 projection;
 
