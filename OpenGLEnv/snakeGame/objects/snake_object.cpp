@@ -233,7 +233,7 @@ void SnakeObject::Draw(SpriteRenderer &renderer) {
         this->Nodes[i].Draw(renderer);
     }
     GLfloat t1 = glfwGetTime();
-//    printf("SnakeObject::Draw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
+    printf("SnakeObject::Draw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
 }
 
 void SnakeObject::BatchDraw(SpriteBatchRenderer &renderer) {
@@ -242,14 +242,14 @@ void SnakeObject::BatchDraw(SpriteBatchRenderer &renderer) {
     }
     
     /**
-     几个节点的话，和上面性能差不多，如果是50个以上的节点，性能可以提升一倍以上
+     几个节点的话，和上面性能差不多，如果是500个以上的节点，性能可以提升一倍以上
      */
     GLfloat t0 = glfwGetTime();
     
     renderer.DrawSprites(this->Nodes);
     
     GLfloat t1 = glfwGetTime();
-//    printf("SnakeObject::BatchDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
+    printf("SnakeObject::BatchDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
 }
 
 void SnakeObject::BatchGPUDraw(SpriteBatchGPURenderer &renderer) {
@@ -258,12 +258,12 @@ void SnakeObject::BatchGPUDraw(SpriteBatchGPURenderer &renderer) {
     }
     
     /**
-     几个节点的话，和上面性能差不多，如果是50个以上的节点，性能可以提升一倍以上
+     几个节点的话，和上面性能差不多，如果是500个以上的节点，性能比批量渲染提升18倍
      */
     GLfloat t0 = glfwGetTime();
     
     renderer.DrawSprites(this->Nodes);
     
     GLfloat t1 = glfwGetTime();
-//    printf("SnakeObject::BatchGPUDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
+//    printf("SnakeObject::BatchGPUDraw duration time %f\n", t1 - t0);// BatchGPUDraw duration time 0.000015
 }
