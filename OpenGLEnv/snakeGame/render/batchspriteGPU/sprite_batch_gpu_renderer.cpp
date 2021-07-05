@@ -1,11 +1,11 @@
 //
-//  sprite_batch_renderer.cpp
+//  sprite_batch_gpu_renderer.cpp
 //  OpenGLEnv
 //
-//  Created by karos li on 2021/7/1.
+//  Created by karos li on 2021/7/5.
 //
 
-#include "sprite_batch_renderer.h"
+#include "sprite_batch_gpu_renderer.h"
 
 #define MaxTextureNum 8
 
@@ -16,27 +16,23 @@ struct InstanceData {
     GLint TextureIndex;
 };
 
-SpriteBatchRenderer::SpriteBatchRenderer(Shader &shader)
+SpriteBatchGPURenderer::SpriteBatchGPURenderer(Shader &shader)
 {
     this->shader = shader;
     this->initRenderData();
 }
 
-SpriteBatchRenderer::~SpriteBatchRenderer()
+SpriteBatchGPURenderer::~SpriteBatchGPURenderer()
 {
     glDeleteVertexArrays(1, &this->quadVAO);
 }
 
-void SpriteBatchRenderer::DrawSprites(std::vector<GameObject> &sprites)
+void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
 {
     this->shader.Use();
     
     GLuint count = static_cast<GLuint>(sprites.size());
-    // 矩阵数据
     InstanceData* instanceDatas = new InstanceData[count];
-    
-    // 纹理坐标
-    glm::vec2* textureCoords = new glm::vec2[count * 6];
     
     GLuint textureIndexes[MaxTextureNum] = {0};
     GLuint textureInfoCount = 0;
@@ -86,21 +82,10 @@ void SpriteBatchRenderer::DrawSprites(std::vector<GameObject> &sprites)
             }
         }
         
-        // 设置纹理索引和纹理坐标
         instanceDatas[i].TextureIndex = textureIndex;
-        textureCoords[i + 0] = glm::vec2(0.0, 1.0);
-        textureCoords[i + 1] = glm::vec2(1.0, 0.0);
-        textureCoords[i + 2] = glm::vec2(0.0, 0.0);
-        textureCoords[i + 3] = glm::vec2(0.0, 1.0);
-        textureCoords[i + 4] = glm::vec2(1.0, 1.0);
-        textureCoords[i + 5] = glm::vec2(1.0, 0.0);
     }
     
-    // 局部更新纹理坐标：发送纹理坐标数据到GPU
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat), count * 6 * sizeof(GLfloat), &textureCoords[0]);
-    
-    // 更新模型视图矩阵： 发送矩阵数据到GPU
+    // 发送矩阵数据到GPU
     glBindBuffer(GL_ARRAY_BUFFER, matrixVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(InstanceData), &instanceDatas[0], GL_DYNAMIC_DRAW);
     
@@ -117,9 +102,10 @@ void SpriteBatchRenderer::DrawSprites(std::vector<GameObject> &sprites)
     glBindVertexArray(0);
 }
 
-void SpriteBatchRenderer::initRenderData()
+void SpriteBatchGPURenderer::initRenderData()
 {
     // configure VAO/VBO
+    unsigned int VBO;
     float vertices[] = {
         // pos             // tex
         // 位置            // 纹理坐标
@@ -147,9 +133,9 @@ void SpriteBatchRenderer::initRenderData()
      */
     
     glGenVertexArrays(1, &this->quadVAO);
-    glGenBuffers(1, &quadVBO);
+    glGenBuffers(1, &VBO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindVertexArray(this->quadVAO);

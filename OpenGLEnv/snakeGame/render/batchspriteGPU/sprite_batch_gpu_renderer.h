@@ -1,12 +1,12 @@
 //
-//  sprite_batch_renderer.hpp
+//  sprite_batch_gpu_renderer.hpp
 //  OpenGLEnv
 //
-//  Created by karos li on 2021/7/1.
+//  Created by karos li on 2021/7/5.
 //
 
-#ifndef SPRITE_BATCH_RENDERER_H
-#define SPRITE_BATCH_RENDERER_H
+#ifndef SPRITE_BATCH_GPU_RENDERER_H
+#define SPRITE_BATCH_GPU_RENDERER_H
 
 #include <vector>
 
@@ -21,23 +21,23 @@
 #include "game_object.h"
 
 // 批量精灵render
-class SpriteBatchRenderer
+class SpriteBatchGPURenderer
 {
 public:
     // Constructor (inits shaders/shapes)
-    SpriteBatchRenderer(Shader &shader);
+    SpriteBatchGPURenderer(Shader &shader);
     // Destructor
-    ~SpriteBatchRenderer();
+    ~SpriteBatchGPURenderer();
     // 绘制一批精灵，用同一个纹理
     void DrawSprites(std::vector<GameObject> &sprites);
 private:
     // Render state
     Shader       shader;
     unsigned int quadVAO;
-    unsigned int quadVBO;
     unsigned int matrixVBO;
     // Initializes and configures the quad's buffer and vertex attributes
     void initRenderData();
 };
 
-#endif /* sprite_batch_renderer_hpp */
+
+#endif /* sprite_batch_gpu_renderer_h */

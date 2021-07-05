@@ -17,6 +17,7 @@
 		7C5DE2D3268DC9310080D790 /* sprite_batch_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D1268DC9310080D790 /* sprite_batch_renderer.cpp */; };
 		7C5DE2D6268DD95A0080D790 /* sprite_batch_renderer.vs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D5268DD95A0080D790 /* sprite_batch_renderer.vs */; };
 		7C5DE2D8268DD9750080D790 /* sprite_batch_renderer.fs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */; };
+		7C5DEC5A2692B6960080D790 /* sprite_batch_gpu_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C5DEC582692B6950080D790 /* sprite_batch_gpu_renderer.cpp */; };
 		7C9A2BBE264AA1FC0054EA21 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB3264AA1FC0054EA21 /* libpng16.a */; };
 		7C9A2BBF264AA1FC0054EA21 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB5264AA1FC0054EA21 /* libfreetype.a */; };
 		7C9A2BC0264AA1FC0054EA21 /* libbrotlidec-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB7264AA1FC0054EA21 /* libbrotlidec-static.a */; };
@@ -254,6 +255,8 @@
 		7C5DE2D2268DC9310080D790 /* sprite_batch_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sprite_batch_renderer.h; sourceTree = "<group>"; };
 		7C5DE2D5268DD95A0080D790 /* sprite_batch_renderer.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_renderer.vs; sourceTree = "<group>"; };
 		7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_renderer.fs; sourceTree = "<group>"; };
+		7C5DEC582692B6950080D790 /* sprite_batch_gpu_renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sprite_batch_gpu_renderer.cpp; sourceTree = "<group>"; };
+		7C5DEC592692B6950080D790 /* sprite_batch_gpu_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sprite_batch_gpu_renderer.h; sourceTree = "<group>"; };
 		7C9A2B03264A72390054EA21 /* ik_EStreamModes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_EStreamModes.h; sourceTree = "<group>"; };
 		7C9A2B04264A72390054EA21 /* ik_vec3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_vec3d.h; sourceTree = "<group>"; };
 		7C9A2B05264A72390054EA21 /* ik_IVirtualRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_IVirtualRefCounted.h; sourceTree = "<group>"; };
@@ -839,6 +842,15 @@
 			path = batchsprite;
 			sourceTree = "<group>";
 		};
+		7C5DEC572692B6660080D790 /* batchspriteGPU */ = {
+			isa = PBXGroup;
+			children = (
+				7C5DEC592692B6950080D790 /* sprite_batch_gpu_renderer.h */,
+				7C5DEC582692B6950080D790 /* sprite_batch_gpu_renderer.cpp */,
+			);
+			path = batchspriteGPU;
+			sourceTree = "<group>";
+		};
 		7C9A2B02264A72390054EA21 /* irrklang */ = {
 			isa = PBXGroup;
 			children = (
@@ -1013,6 +1025,7 @@
 		7C9A2D43264D18AE0054EA21 /* render */ = {
 			isa = PBXGroup;
 			children = (
+				7C5DEC572692B6660080D790 /* batchspriteGPU */,
 				7C5DE2D4268DC93B0080D790 /* batchsprite */,
 				7C9A2DA2264D226D0054EA21 /* line */,
 				7C9A2D44264D18AE0054EA21 /* sprite */,
@@ -1953,6 +1966,7 @@
 				7C9A2D70264D18AE0054EA21 /* shader.cpp in Sources */,
 				7C9A2D42264D18150054EA21 /* game_object.cpp in Sources */,
 				7C9A2D6D264D18AE0054EA21 /* particle_generator.cpp in Sources */,
+				7C5DEC5A2692B6960080D790 /* sprite_batch_gpu_renderer.cpp in Sources */,
 				7C5DE2D3268DC9310080D790 /* sprite_batch_renderer.cpp in Sources */,
 				7C9A2D62264D18AE0054EA21 /* sprite_renderer.cpp in Sources */,
 				7C9A2D6F264D18AE0054EA21 /* texture.cpp in Sources */,
