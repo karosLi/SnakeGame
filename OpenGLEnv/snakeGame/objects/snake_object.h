@@ -18,6 +18,7 @@
 #include "game_object.h"
 #include "texture.h"
 #include "sprite_batch_renderer.h"
+#include "sprite_batch_gpu_renderer.h"
 
 class SnakeObject {
     
@@ -58,6 +59,8 @@ public:
     void Draw(SpriteRenderer &renderer);
     // 批量渲染
     void BatchDraw(SpriteBatchRenderer &renderer);
+    // 批量渲染 - 基于GPU
+    void BatchGPUDraw(SpriteBatchGPURenderer &renderer);
     
     
 private:

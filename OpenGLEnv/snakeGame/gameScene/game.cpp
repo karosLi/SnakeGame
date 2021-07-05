@@ -14,6 +14,7 @@
 #include "resource_manager.h"
 #include "sprite_renderer.h"
 #include "sprite_batch_renderer.h"
+#include "sprite_batch_gpu_renderer.h"
 #include "line_renderer.h"
 #include "particle_generator.h"
 #include "post_processor.h"
@@ -31,6 +32,8 @@ GLuint GRID_COLS = 0;
 SpriteRenderer      *SpriteRender;
 
 SpriteBatchRenderer *SpriteBatchRender;
+
+SpriteBatchGPURenderer *SpriteBatchGPURender;
 
 // 线段渲染对象
 LineRenderer        *LineRender;
@@ -99,6 +102,7 @@ void Game::Init()
     /// 加载着色器
     ResourceManager::LoadShader("sprite.vs", "sprite.fs", nullptr, "sprite");
     ResourceManager::LoadShader("sprite_batch_renderer.vs", "sprite_batch_renderer.fs", nullptr, "sprite_batch");
+    ResourceManager::LoadShader("sprite_batch_gpu_renderer.vs", "sprite_batch_gpu_renderer.fs", nullptr, "sprite_batch_gpu");
     ResourceManager::LoadShader("line.vs", "line.fs", nullptr, "line");
     ResourceManager::LoadShader("particle.vs", "particle.fs", nullptr, "particle");
     ResourceManager::LoadShader("post_processing.vs", "post_processing.fs", nullptr, "postprocessing");
@@ -112,6 +116,7 @@ void Game::Init()
     lineShader.Use();
     
     Shader spriteBatchShader = ResourceManager::GetShader("sprite_batch");
+    Shader spriteBatchGPUShader = ResourceManager::GetShader("sprite_batch_gpu");
     
     
     
@@ -129,6 +134,7 @@ void Game::Init()
     // 创建精灵渲染对象
     SpriteRender = new SpriteRenderer(spriteShader);
     SpriteBatchRender = new SpriteBatchRenderer(spriteBatchShader);
+    SpriteBatchGPURender = new SpriteBatchGPURenderer(spriteBatchGPUShader);
     // 创建线段渲染对象
     LineRender = new LineRenderer(lineShader);
     // 创建粒子发射器渲染对象
@@ -148,7 +154,7 @@ void Game::Init()
     // 蛇
     std::vector<Texture2D> snakeSprites = GetSkinTextures("skin_head", "skin_body", "skin_tail", 4);
     // 由于加载的蛇头和身体纹理方向是向上的的，为了让蛇纹理方向与蛇移动方向一致，需要旋转蛇的节点，所以需要顺时针旋转 90 度
-    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(24, 24), 50, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
+    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(24, 24), 500, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
     
     // 食物
     std::vector<Texture2D> foodSprites = GetTextures(14, "food");
@@ -309,6 +315,10 @@ void Game::UpdateCamera()
     Shader spriteBatchShader = ResourceManager::GetShader("sprite_batch");
     spriteBatchShader.Use();
     spriteBatchShader.SetMatrix4("projection", projection);
+    
+    Shader spriteBatchGPUShader = ResourceManager::GetShader("sprite_batch_gpu");
+    spriteBatchGPUShader.Use();
+    spriteBatchGPUShader.SetMatrix4("projection", projection);
 }
 
 void Game::Render()
@@ -348,7 +358,11 @@ void Game::Render()
         // 绘制蛇
 //        Snake->Draw(*SpriteRender);
         
-        Snake->BatchDraw(*SpriteBatchRender);
+        // 批量绘制
+//        Snake->BatchDraw(*SpriteBatchRender);
+        
+        // 批量绘制 - 基于GPU
+        Snake->BatchGPUDraw(*SpriteBatchGPURender);
         
         
         // End rendering to postprocessing quad

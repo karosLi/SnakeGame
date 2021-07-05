@@ -10,8 +10,14 @@
 #define MaxTextureNum 8
 
 struct InstanceData {
-    // 矩阵
-    glm::mat4 Matrix;
+    // 实例位置
+    glm::vec2 Position;
+    // 实例大小
+    glm::vec2 Size;
+    // 实例旋转弧度
+    GLfloat Radian;
+    // 实例旋转四元数
+    glm::quat Quaternion;
     // 纹理索引
     GLint TextureIndex;
 };
@@ -32,7 +38,11 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
     this->shader.Use();
     
     GLuint count = static_cast<GLuint>(sprites.size());
+    // 矩阵数据
     InstanceData* instanceDatas = new InstanceData[count];
+    
+    // 纹理坐标
+    glm::vec2* textureCoords = new glm::vec2[count * 6];
     
     GLuint textureIndexes[MaxTextureNum] = {0};
     GLuint textureInfoCount = 0;
@@ -40,28 +50,16 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
     for (GLint i = 0; i < count; i++) {
         GameObject gameObject = sprites[i];
         
-        glm::mat4 model = glm::mat4(1.0f);
         glm::vec2 position = gameObject.Position;
         glm::vec2 size = gameObject.Size;
         float rotate = gameObject.Rotation;
         glm::quat rotationQuat = gameObject.RotationQuat;
         Texture2D &texture = gameObject.Sprite;
-        
-        model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
-
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // move origin of rotation to center of quad
-        // 正的度数是顺时针
-        if (rotate > 0) {
-            model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
-        } else {
-            model = model * glm::mat4_cast(rotationQuat);
-        }
-        
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // move origin back
-
-        model = glm::scale(model, glm::vec3(size, 1.0f)); // last scale
-        
-        instanceDatas[i].Matrix = model;
+ 
+        instanceDatas[i].Position = position;
+        instanceDatas[i].Size = size;
+        instanceDatas[i].Radian = glm::radians(rotate);
+        instanceDatas[i].Quaternion = rotationQuat;
         
         GLint textureIndex = 0;
         GLboolean foundSame = GL_FALSE;
@@ -82,10 +80,21 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
             }
         }
         
+        // 设置纹理索引和纹理坐标
         instanceDatas[i].TextureIndex = textureIndex;
+        textureCoords[i + 0] = glm::vec2(0.0, 1.0);
+        textureCoords[i + 1] = glm::vec2(1.0, 0.0);
+        textureCoords[i + 2] = glm::vec2(0.0, 0.0);
+        textureCoords[i + 3] = glm::vec2(0.0, 1.0);
+        textureCoords[i + 4] = glm::vec2(1.0, 1.0);
+        textureCoords[i + 5] = glm::vec2(1.0, 0.0);
     }
     
-    // 发送矩阵数据到GPU
+    // 局部更新纹理坐标：发送纹理坐标数据到GPU
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat), count * 6 * sizeof(GLfloat), &textureCoords[0]);
+    
+    // 更新模型视图矩阵： 发送矩阵数据到GPU
     glBindBuffer(GL_ARRAY_BUFFER, matrixVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(InstanceData), &instanceDatas[0], GL_DYNAMIC_DRAW);
     
@@ -105,7 +114,6 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
 void SpriteBatchGPURenderer::initRenderData()
 {
     // configure VAO/VBO
-    unsigned int VBO;
     float vertices[] = {
         // pos             // tex
         // 位置            // 纹理坐标
@@ -133,9 +141,9 @@ void SpriteBatchGPURenderer::initRenderData()
      */
     
     glGenVertexArrays(1, &this->quadVAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &quadVBO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindVertexArray(this->quadVAO);
@@ -150,16 +158,14 @@ void SpriteBatchGPURenderer::initRenderData()
     
     // 矩阵属性
     GLsizei size = sizeof(InstanceData);
-    GLsizei vec4Size = sizeof(glm::vec4);
-    
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, size, (void*)0);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, size, (void*)0);
     glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, size, (void*)(vec4Size));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, Size)));
     glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, size, (void*)(2 * vec4Size));
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, Radian)));
     glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, size, (void*)(3 * vec4Size));
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, Quaternion)));
     glEnableVertexAttribArray(6);
     glVertexAttribPointer(6, 1, GL_INT, GL_FALSE, size, (void*)(offsetof(InstanceData, TextureIndex)));
     

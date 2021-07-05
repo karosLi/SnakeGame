@@ -18,6 +18,8 @@
 		7C5DE2D6268DD95A0080D790 /* sprite_batch_renderer.vs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D5268DD95A0080D790 /* sprite_batch_renderer.vs */; };
 		7C5DE2D8268DD9750080D790 /* sprite_batch_renderer.fs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */; };
 		7C5DEC5A2692B6960080D790 /* sprite_batch_gpu_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C5DEC582692B6950080D790 /* sprite_batch_gpu_renderer.cpp */; };
+		7C5DEC5C2692DC9E0080D790 /* sprite_batch_gpu_renderer.vs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DEC5B2692DC9E0080D790 /* sprite_batch_gpu_renderer.vs */; };
+		7C5DEC5E2692DCAF0080D790 /* sprite_batch_gpu_renderer.fs in Resources */ = {isa = PBXBuildFile; fileRef = 7C5DEC5D2692DCAF0080D790 /* sprite_batch_gpu_renderer.fs */; };
 		7C9A2BBE264AA1FC0054EA21 /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB3264AA1FC0054EA21 /* libpng16.a */; };
 		7C9A2BBF264AA1FC0054EA21 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB5264AA1FC0054EA21 /* libfreetype.a */; };
 		7C9A2BC0264AA1FC0054EA21 /* libbrotlidec-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C9A2BB7264AA1FC0054EA21 /* libbrotlidec-static.a */; };
@@ -257,6 +259,8 @@
 		7C5DE2D7268DD9740080D790 /* sprite_batch_renderer.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_renderer.fs; sourceTree = "<group>"; };
 		7C5DEC582692B6950080D790 /* sprite_batch_gpu_renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sprite_batch_gpu_renderer.cpp; sourceTree = "<group>"; };
 		7C5DEC592692B6950080D790 /* sprite_batch_gpu_renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sprite_batch_gpu_renderer.h; sourceTree = "<group>"; };
+		7C5DEC5B2692DC9E0080D790 /* sprite_batch_gpu_renderer.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_gpu_renderer.vs; sourceTree = "<group>"; };
+		7C5DEC5D2692DCAF0080D790 /* sprite_batch_gpu_renderer.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sprite_batch_gpu_renderer.fs; sourceTree = "<group>"; };
 		7C9A2B03264A72390054EA21 /* ik_EStreamModes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_EStreamModes.h; sourceTree = "<group>"; };
 		7C9A2B04264A72390054EA21 /* ik_vec3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_vec3d.h; sourceTree = "<group>"; };
 		7C9A2B05264A72390054EA21 /* ik_IVirtualRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ik_IVirtualRefCounted.h; sourceTree = "<group>"; };
@@ -847,6 +851,8 @@
 			children = (
 				7C5DEC592692B6950080D790 /* sprite_batch_gpu_renderer.h */,
 				7C5DEC582692B6950080D790 /* sprite_batch_gpu_renderer.cpp */,
+				7C5DEC5B2692DC9E0080D790 /* sprite_batch_gpu_renderer.vs */,
+				7C5DEC5D2692DCAF0080D790 /* sprite_batch_gpu_renderer.fs */,
 			);
 			path = batchspriteGPU;
 			sourceTree = "<group>";
@@ -1857,6 +1863,7 @@
 				7CC8C409261C814800D97563 /* type_vec3.inl in Resources */,
 				7C9A2D9B264D19820054EA21 /* bleep.wav in Resources */,
 				7C9A2D6A264D18AE0054EA21 /* post_processing.vs in Resources */,
+				7C5DEC5C2692DC9E0080D790 /* sprite_batch_gpu_renderer.vs in Resources */,
 				7CC8C3F0261C814800D97563 /* func_packing.inl in Resources */,
 				7C9A2DCC264E94150054EA21 /* skin_head_0.png in Resources */,
 				7CC8C451261C814800D97563 /* perpendicular.inl in Resources */,
@@ -1892,6 +1899,7 @@
 				7CC8C452261C814800D97563 /* transform2.inl in Resources */,
 				7C9A2DA1264D19820054EA21 /* two.lvl in Resources */,
 				7CC8C3F6261C814800D97563 /* type_vec.inl in Resources */,
+				7C5DEC5E2692DCAF0080D790 /* sprite_batch_gpu_renderer.fs in Resources */,
 				7CC8C3F8261C814800D97563 /* func_trigonometric.inl in Resources */,
 				7CC8C411261C814800D97563 /* type_mat3x3.inl in Resources */,
 				7CC8C40D261C814800D97563 /* type_mat3x4.inl in Resources */,

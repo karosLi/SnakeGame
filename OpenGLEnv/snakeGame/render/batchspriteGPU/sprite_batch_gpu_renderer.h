@@ -20,7 +20,7 @@
 #include "shader.h"
 #include "game_object.h"
 
-// 批量精灵render
+// 批量精灵render - 基于 GPU 计算矩阵
 class SpriteBatchGPURenderer
 {
 public:
@@ -34,6 +34,7 @@ private:
     // Render state
     Shader       shader;
     unsigned int quadVAO;
+    unsigned int quadVBO;
     unsigned int matrixVBO;
     // Initializes and configures the quad's buffer and vertex attributes
     void initRenderData();

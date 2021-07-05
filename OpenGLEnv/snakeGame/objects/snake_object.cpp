@@ -251,3 +251,19 @@ void SnakeObject::BatchDraw(SpriteBatchRenderer &renderer) {
     GLfloat t1 = glfwGetTime();
 //    printf("SnakeObject::BatchDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
 }
+
+void SnakeObject::BatchGPUDraw(SpriteBatchGPURenderer &renderer) {
+    if (this->Died) {
+        return;
+    }
+    
+    /**
+     几个节点的话，和上面性能差不多，如果是50个以上的节点，性能可以提升一倍以上
+     */
+    GLfloat t0 = glfwGetTime();
+    
+    renderer.DrawSprites(this->Nodes);
+    
+    GLfloat t1 = glfwGetTime();
+//    printf("SnakeObject::BatchGPUDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
+}
