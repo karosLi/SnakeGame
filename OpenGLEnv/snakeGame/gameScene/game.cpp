@@ -148,7 +148,7 @@ void Game::Init()
     // 蛇
     std::vector<Texture2D> snakeSprites = GetSkinTextures("skin_head", "skin_body", "skin_tail", 4);
     // 由于加载的蛇头和身体纹理方向是向上的的，为了让蛇纹理方向与蛇移动方向一致，需要旋转蛇的节点，所以需要顺时针旋转 90 度
-    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(24, 24), 5, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
+    Snake = new SnakeObject(glm::vec2(this->MapOrigin.x + this->MapWidth / 2.0, this->MapOrigin.y + this->MapHeight / 2.0), glm::vec2(24, 24), 500, snakeSprites, 90, INITIAL_SNAKE_DIRECTION * INITIAL_SNAKE_VELOCITY, glm::vec4(0.0f, 1.0f, -1.0f, 1.0f));
     
     // 食物
     std::vector<Texture2D> foodSprites = GetTextures(14, "food");

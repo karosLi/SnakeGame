@@ -13,7 +13,7 @@ struct InstanceData {
     // 矩阵
     glm::mat4 Matrix;
     // 纹理索引
-    GLfloat TextureIndex;
+    GLint TextureIndex;
 };
 
 SpriteBatchRenderer::SpriteBatchRenderer(Shader &shader)
@@ -27,7 +27,7 @@ SpriteBatchRenderer::~SpriteBatchRenderer()
     glDeleteVertexArrays(1, &this->quadVAO);
 }
 
-void SpriteBatchRenderer::DrawSprites(std::vector<GameObject> &sprites, Texture2D &texture, glm::vec4 color)
+void SpriteBatchRenderer::DrawSprites(std::vector<GameObject> &sprites)
 {
     this->shader.Use();
     
@@ -161,7 +161,7 @@ void SpriteBatchRenderer::initRenderData()
     glEnableVertexAttribArray(5);
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, size, (void*)(3 * vec4Size));
     glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, TextureIndex)));
+    glVertexAttribPointer(6, 1, GL_INT, GL_FALSE, size, (void*)(offsetof(InstanceData, TextureIndex)));
     
     // 设置顶点属性更新方式，0 表示每个顶点更新，1 表示每个实例更新，2 每隔 2 个实例更新，以此类推
     glVertexAttribDivisor(2, 1);

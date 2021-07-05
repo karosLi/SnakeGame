@@ -29,7 +29,7 @@ public:
     // Destructor
     ~SpriteBatchRenderer();
     // 绘制一批精灵，用同一个纹理
-    void DrawSprites(std::vector<GameObject> &sprites, Texture2D &texture, glm::vec4 color = glm::vec4(1.0f));
+    void DrawSprites(std::vector<GameObject> &sprites);
 private:
     // Render state
     Shader       shader;

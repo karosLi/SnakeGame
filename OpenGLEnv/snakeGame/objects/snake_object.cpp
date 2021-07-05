@@ -241,20 +241,12 @@ void SnakeObject::BatchDraw(SpriteBatchRenderer &renderer) {
         return;
     }
     
+    /**
+     几个节点的话，和上面性能差不多，如果是50个以上的节点，性能可以提升一倍以上
+     */
     GLfloat t0 = glfwGetTime();
     
-//    std::vector<GameObject> head;
-//    head.push_back(this->Nodes[0]);
-//
-//    std::vector<GameObject> bodys;
-//    std::copy_if(this->Nodes.begin() + 1, this->Nodes.end(), std::back_inserter(bodys), [](GameObject &node){
-//        return GL_TRUE;
-//    });
-//
-//    renderer.DrawSprites(head, head[0].Sprite);
-//    renderer.DrawSprites(bodys, bodys[0].Sprite);
-//
-    renderer.DrawSprites(this->Nodes, this->Nodes[0].Sprite);
+    renderer.DrawSprites(this->Nodes);
     
     GLfloat t1 = glfwGetTime();
 //    printf("SnakeObject::BatchDraw duration time %f\n", t1 - t0);// BatchDraw duration time 0.000015
