@@ -22,6 +22,13 @@ uniform mat4 projection;
  https://stackoverflow.com/questions/46776217/compute-translation-mattrix-from-position-directly-in-shader-with-glsl
  https://stackoverflow.com/questions/24741050/recommended-way-to-approach-rotations-in-opengl
  https://www.geeks3d.com/20141201/how-to-rotate-a-vertex-by-a-quaternion-in-glsl/
+ 
+ 
+     c0  c1  c2  c3
+    [ Xx  Yx  Zx  Tx ]
+    [ Xy  Yy  Zy  Ty ]
+    [ Xz  Yz  Zz  Tz ]
+    [  0   0   0   1 ]
  */
 
 // 四元数旋转变换
@@ -80,22 +87,71 @@ vec3 rotation_transform(vec4 quat, float radians, vec3 pos)
     return quat_transform(quat, pos);
 }
 
+// 缩放矩阵
+mat4 scale_matrix(vec2 size)
+{
+    return mat4(
+        vec4(size.x,
+             0.0,
+             0.0,
+             0.0),
+        vec4(0.0,
+             size.y,
+             0.0,
+             0.0),
+        vec4(0.0,
+             0.0,
+             1.0,
+             0.0),
+        vec4(0.0,
+             0.0,
+             0.0,
+             1.0));
+}
+
+// 平移矩阵
+mat4 translate_matrix(vec2 position)
+{
+    return mat4(
+        vec4(1.0,
+             0.0,
+             0.0,
+             0.0),
+        vec4(0.0,
+             1.0,
+             0.0,
+             0.0),
+        vec4(0.0,
+             0.0,
+             1.0,
+             0.0),
+        vec4(position.x,
+             position.y,
+             0.0,
+             1.0));
+}
+
 // 旋转矩阵
 mat4 rotation_matrix(vec4 quat, float radians)
 {
     if (radians > 0) {
-        mat3 rotationMatrix = mat3(
-            vec3(cos(radians),
+        return mat4(
+            vec4(cos(radians),
                  sin(radians),
+                 0.0,
                  0.0),
-            vec3(-sin(radians),
+            vec4(-sin(radians),
                  cos(radians),
+                 0.0,
                  0.0),
-            vec3(0.0,
+            vec4(0.0,
+                 0.0,
+                 1.0,
+                 0.0),
+            vec4(0.0,
+                 0.0,
                  0.0,
                  1.0));
-        
-        return mat4(rotationMatrix);
     }
     
     return mat4(mat3_cast(quat));
@@ -103,95 +159,22 @@ mat4 rotation_matrix(vec4 quat, float radians)
 
 void main()
 {
-    /**
-     c0  c1  c2  c3
-   [ Xx  Yx  Zx  Tx ]
-   [ Xy  Yy  Zy  Ty ]
-   [ Xz  Yz  Zz  Tz ]
-   [  0   0   0   1 ]
-     */
-    mat4 modelMatrix = mat4(1.0);
-    
     // 缩放
-    mat4 scaleMatrix = mat4(
-         vec4(aInstanceSize.x,
-              0.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              aInstanceSize.y,
-              0.0,
-              0.0),
-         vec4(0.0,
-              0.0,
-              1.0,
-              0.0),
-         vec4(0.0,
-              0.0,
-              0.0,
-              1.0));
+    mat4 scaleMatrix = scale_matrix(aInstanceSize);
     
     // 平移到原点
-    mat4 translateToOriginMatrix = mat4(
-         vec4(1.0,
-              0.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              1.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              0.0,
-              1.0,
-              0.0),
-         vec4(-0.5 * aInstanceSize.x,
-              -0.5 * aInstanceSize.y,
-              0.0,
-              1.0));
+    mat4 translateToOriginMatrix = translate_matrix(vec2(-0.5 * aInstanceSize.x, -0.5 * aInstanceSize.y));
     
     // 在原点旋转
     mat4 rotationMatrix = rotation_matrix(aInstanceQuaternion, aInstanceRadian);
     
     // 平移回初始位置
-    mat4 translateToStartMatrix = mat4(
-         vec4(1.0,
-              0.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              1.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              0.0,
-              1.0,
-              0.0),
-         vec4(0.5 * aInstanceSize.x,
-              0.5 * aInstanceSize.y,
-              0.0,
-              1.0));
+    mat4 translateToStartMatrix = translate_matrix(vec2(0.5 * aInstanceSize.x, 0.5 * aInstanceSize.y));
     
     // 平移到目标位置
-    mat4 translateToTargetMatrix = mat4(
-         vec4(1.0,
-              0.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              1.0,
-              0.0,
-              0.0),
-         vec4(0.0,
-              0.0,
-              1.0,
-              0.0),
-         vec4(aInstancePosition.x,
-              aInstancePosition.y,
-              0.0,
-              1.0));
+    mat4 translateToTargetMatrix = translate_matrix(aInstancePosition);
     
-    modelMatrix = translateToTargetMatrix * translateToStartMatrix * rotationMatrix * translateToOriginMatrix * scaleMatrix;
+    mat4 modelMatrix = translateToTargetMatrix * translateToStartMatrix * rotationMatrix * translateToOriginMatrix * scaleMatrix;
     
     TexCoords = aTexCoord;
     TexIndex = aInstanceTexIndex;

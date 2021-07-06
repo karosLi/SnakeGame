@@ -183,6 +183,7 @@ void SpriteBatchRenderer::initRenderData()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     glBindVertexArray(0);
     

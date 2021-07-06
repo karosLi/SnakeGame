@@ -35,6 +35,7 @@ private:
     Shader       shader;
     unsigned int quadVAO;
     unsigned int quadVBO;
+    unsigned int quadEBO;
     unsigned int matrixVBO;
     // Initializes and configures the quad's buffer and vertex attributes
     void initRenderData();

@@ -113,16 +113,16 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
 
 void SpriteBatchGPURenderer::initRenderData()
 {
-    // configure VAO/VBO
-    float vertices[] = {
+    // 初始化单位正方形顶点位置和纹理坐标
+    GLfloat vertices[] = {
         // pos             // tex
         // 位置            // 纹理坐标
-        0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 左下角
+        1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // 右上角
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // 左上角
 
         0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // 右下角
         1.0f, 0.0f, 0.0f, 1.0f, 0.0f
     };
     
@@ -142,20 +142,21 @@ void SpriteBatchGPURenderer::initRenderData()
     
     glGenVertexArrays(1, &this->quadVAO);
     glGenBuffers(1, &quadVBO);
+    glGenBuffers(1, &matrixVBO);
 
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    /// 配置顶点属性取值描述
     glBindVertexArray(this->quadVAO);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-    glGenBuffers(1, &matrixVBO);
+    /// 配置矩阵属性取值描述
     glBindBuffer(GL_ARRAY_BUFFER, matrixVBO);// 绑定矩阵 VBO，让下面的顶点属性从 matrixVBO 里取数据
-    
     // 矩阵属性
     GLsizei size = sizeof(InstanceData);
     glEnableVertexAttribArray(2);
@@ -175,6 +176,7 @@ void SpriteBatchGPURenderer::initRenderData()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     glBindVertexArray(0);
     
