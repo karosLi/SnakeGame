@@ -9,6 +9,7 @@ layout (location = 3) in vec2 aInstanceSize;
 layout (location = 4) in float aInstanceRadian;
 layout (location = 5) in vec4 aInstanceQuaternion;
 layout (location = 6) in int aInstanceTexIndex;
+layout (location = 7) in vec4 aInstanceTexFrame;
 
 out vec2 TexCoords;
 flat out int TexIndex;
@@ -174,9 +175,14 @@ void main()
     // 平移到目标位置
     mat4 translateToTargetMatrix = translate_matrix(aInstancePosition);
     
+    // 模型矩阵
     mat4 modelMatrix = translateToTargetMatrix * translateToStartMatrix * rotationMatrix * translateToOriginMatrix * scaleMatrix;
     
-    TexCoords = aTexCoord;
+    // 纹理矩阵
+    mat4 textMatrix = translate_matrix(aInstanceTexFrame.xy) * scale_matrix(aInstanceTexFrame.zw);
+    
+    TexCoords = (textMatrix * vec4(aTexCoord, 0.0, 0.0)).xy;
+//    TexCoords = aTexCoord;
     TexIndex = aInstanceTexIndex;
     gl_Position = projection * modelMatrix * vec4(aPos, 1.0);
 }

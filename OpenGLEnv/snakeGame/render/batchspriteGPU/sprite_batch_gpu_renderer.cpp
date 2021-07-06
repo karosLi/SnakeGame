@@ -20,6 +20,8 @@ struct InstanceData {
     glm::quat Quaternion;
     // 纹理索引
     GLint TextureIndex;
+    // 纹理 frame, 纹理左下角和纹理宽高，都是小于 1.0
+    glm::vec4 TextureFrame;
 };
 
 SpriteBatchGPURenderer::SpriteBatchGPURenderer(Shader &shader)
@@ -42,7 +44,7 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
     InstanceData* instanceDatas = new InstanceData[count];
     
     // 纹理坐标
-    glm::vec2* textureCoords = new glm::vec2[count * 6];
+//    glm::vec2* textureCoords = new glm::vec2[count * 6];
     
     GLuint textureIndexes[MaxTextureNum] = {0};
     GLuint textureInfoCount = 0;
@@ -82,17 +84,26 @@ void SpriteBatchGPURenderer::DrawSprites(std::vector<GameObject> &sprites)
         
         // 设置纹理索引和纹理坐标
         instanceDatas[i].TextureIndex = textureIndex;
-        textureCoords[i + 0] = glm::vec2(0.0, 1.0);
-        textureCoords[i + 1] = glm::vec2(1.0, 0.0);
-        textureCoords[i + 2] = glm::vec2(0.0, 0.0);
-        textureCoords[i + 3] = glm::vec2(0.0, 1.0);
-        textureCoords[i + 4] = glm::vec2(1.0, 1.0);
-        textureCoords[i + 5] = glm::vec2(1.0, 0.0);
+//        textureCoords[i + 0] = glm::vec2(0.0, 1.0);
+//        textureCoords[i + 1] = glm::vec2(1.0, 0.0);
+//        textureCoords[i + 2] = glm::vec2(0.0, 0.0);
+//        textureCoords[i + 3] = glm::vec2(0.0, 1.0);
+//        textureCoords[i + 4] = glm::vec2(1.0, 1.0);
+//        textureCoords[i + 5] = glm::vec2(1.0, 0.0);
+//
+//        instanceDatas[i].TextureCoords[i + 0] = glm::vec2(0.0, 1.0);
+//        instanceDatas[i].TextureCoords[i + 1] = glm::vec2(1.0, 0.0);
+//        instanceDatas[i].TextureCoords[i + 2] = glm::vec2(0.0, 0.0);
+//        instanceDatas[i].TextureCoords[i + 3] = glm::vec2(0.0, 1.0);
+//        instanceDatas[i].TextureCoords[i + 4] = glm::vec2(1.0, 1.0);
+//        instanceDatas[i].TextureCoords[i + 5] = glm::vec2(1.0, 0.0);
+        
+        instanceDatas[i].TextureFrame = glm::vec4(0.0, 0.0, 1.0, 1.0);
     }
     
     // 局部更新纹理坐标：发送纹理坐标数据到GPU
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat), count * 6 * sizeof(GLfloat), &textureCoords[0]);
+//    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+//    glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat), count * 6 * sizeof(GLfloat), &textureCoords[0]);
     
     // 更新模型视图矩阵： 发送矩阵数据到GPU
     glBindBuffer(GL_ARRAY_BUFFER, matrixVBO);
@@ -169,6 +180,8 @@ void SpriteBatchGPURenderer::initRenderData()
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, Quaternion)));
     glEnableVertexAttribArray(6);
     glVertexAttribPointer(6, 1, GL_INT, GL_FALSE, size, (void*)(offsetof(InstanceData, TextureIndex)));
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, size, (void*)(offsetof(InstanceData, TextureFrame)));
     
     // 设置顶点属性更新方式，0 表示每个顶点更新，1 表示每个实例更新，2 每隔 2 个实例更新，以此类推
     glVertexAttribDivisor(2, 1);
@@ -176,6 +189,7 @@ void SpriteBatchGPURenderer::initRenderData()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     glBindVertexArray(0);
